@@ -2,10 +2,10 @@ import io # io ???
 import requests
 import pandas as pd
 import dlt
+import duckdb
+from constants import DUCKDB_PATH, CSV_URL
 
-CSV_URL = " " # google sheets URL
-
-@dlt_resource(name="historical_strength_data", write_disposition = "replace")
+@dlt.resource(name="historical_strength_data", write_disposition = "replace", table_name="strength_staging",)
 def fetch_historical_strength_data():
     data = requests.get(CSV_URL, timeout=30) # timeout ???
     data.raise_for_status()
@@ -18,10 +18,11 @@ def fetch_historical_strength_data():
     for rec in df.to_dict(orient = "records"): # orient?
         yield rec
 pipeline = dlt.pipeline(
-    pipeline_name="strengthlog_google_sheet_to_redshift",
-    destination= "redshift"
+    pipeline_name="strengthlog_google_sheet_to_duckdb",
+    destination= dlt.destinations.duckdb(DUCKDB_PATH),
+    dataset_name="staging",
 )
 
 if __name__ == '__main__':
-    load_info = pipeline.run(fetch_historical_strength_data, table_name= "strength_staging") # table_name = schema?
-    print(load_info)
+    load_info = pipeline.run(fetch_historical_strength_data) # table_name = schema?
+    print(load_info) 
