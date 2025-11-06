@@ -7,7 +7,7 @@ from constants import DUCKDB_PATH, CSV_URL
 
 @dlt.resource(name="historical_strength_data", write_disposition = "replace", table_name="strength_staging",)
 def fetch_historical_strength_data():
-    data = requests.get(CSV_URL, timeout=30) # timeout ???
+    data = requests.get(CSV_URL, timeout=30)
     data.raise_for_status()
     df= pd.read_csv(io.StringIO(data.text))
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
@@ -15,7 +15,7 @@ def fetch_historical_strength_data():
     for c in date_cols:
         df[c] = pd.to_datetime(df[c], errors = "coerce") 
 
-    for rec in df.to_dict(orient = "records"): # orient?
+    for rec in df.to_dict(orient = "records"): 
         yield rec
 pipeline = dlt.pipeline(
     pipeline_name="strengthlog_google_sheet_to_duckdb",
@@ -24,5 +24,5 @@ pipeline = dlt.pipeline(
 )
 
 if __name__ == '__main__':
-    load_info = pipeline.run(fetch_historical_strength_data) # table_name = schema?
+    load_info = pipeline.run(fetch_historical_strength_data)
     print(load_info) 
