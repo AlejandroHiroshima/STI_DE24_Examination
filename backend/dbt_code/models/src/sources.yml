@@ -1,0 +1,6 @@
+sources:
+  - name: strength_table  # källans namn i dbt
+    schema: staging        # schema i databasen
+    tables:
+      - name: strength_table      # så här refererar du den i dbt
+        identifier: strength_staging  # verkligt tabellnamn i databasen
