@@ -1,0 +1,20 @@
+Table strength {
+workout_date date [not null]
+gympass varchar (50) [not null]
+exercise_name varchar (50) [not null]
+muscle_group varchar (50) [not null]
+muscle_group_secondary varchar (50) [not null]
+set_number integer [not null]
+reps integer [not null] 
+extra_weight_kg float [not null]
+time_sec time  [not null]
+total_weight_session float [not null]
+
+}
+
+
+
+
+
+
+
