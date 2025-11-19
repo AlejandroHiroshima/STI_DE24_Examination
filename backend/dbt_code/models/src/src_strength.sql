@@ -5,7 +5,7 @@ select
     reps,
     weight_kg,
     extra_weight_kg,
-    time_minute,
+    time_session,
     
 from staging_strength
     

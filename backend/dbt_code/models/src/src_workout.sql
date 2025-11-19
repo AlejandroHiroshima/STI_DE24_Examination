@@ -1,7 +1,7 @@
 with staging_workout as (select * from {{ source('strength_table', 'strength_table') }} )
 
 select
-    workout_name,
+    workoutgym_name,
     athlete_id,
     workout_date,
     total_volume_session

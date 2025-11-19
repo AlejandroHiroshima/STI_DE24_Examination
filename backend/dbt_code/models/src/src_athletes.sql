@@ -4,7 +4,7 @@
     athlete_first_name, 
     athlete_last_name,
     athlete_date_of_birth,
-    bodyweight_kilo,
+    athlete_weight_kg,
     gender,
     created_at,
     updated_at,

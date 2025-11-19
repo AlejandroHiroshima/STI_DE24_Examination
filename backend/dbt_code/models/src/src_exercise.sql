@@ -4,6 +4,5 @@ select
     exercise_name,
     muscle_group_primary,
     muscle_group_secondary,
-    muscle_group_tertiary,
     
 from staging_exercise
