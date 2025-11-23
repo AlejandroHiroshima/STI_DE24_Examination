@@ -3,20 +3,29 @@ import requests
 import pandas as pd
 import dlt
 import duckdb
-from constants import DUCKDB_PATH, CSV_URL
+from constants import DUCKDB_PATH, CSV_URL_ALEX, CSV_URL_ERIK
 
-@dlt.resource(name="historical_strength_data", write_disposition = "replace", table_name="strength_staging",)
-def fetch_historical_strength_data():
-    data = requests.get(CSV_URL, timeout=30)
+@dlt.resource(name="historical_strength_data_alex", write_disposition = "replace", table_name="stg_alex",)
+def fetch_alex_strength_data():
+    data = requests.get(CSV_URL_ALEX, timeout=30)
     data.raise_for_status()
     df= pd.read_csv(io.StringIO(data.text))
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
-    date_cols = [c for c in df.columns if "workout_date" in c]
-    for c in date_cols:
-        df[c] = pd.to_datetime(df[c], errors = "coerce") 
 
     for rec in df.to_dict(orient = "records"): 
         yield rec
+
+
+@dlt.resource(name="historical_strength_data_erik", write_disposition = "replace", table_name="stg_erik",)
+def fetch_erik_strength_data():
+    data = requests.get(CSV_URL_ERIK, timeout=30)
+    data.raise_for_status()
+    df= pd.read_csv(io.StringIO(data.text))
+    df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
+
+    for rec in df.to_dict(orient = "records"): 
+        yield rec
+
 pipeline = dlt.pipeline(
     pipeline_name="strengthlog_google_sheet_to_duckdb",
     destination= dlt.destinations.duckdb(DUCKDB_PATH),
@@ -24,5 +33,7 @@ pipeline = dlt.pipeline(
 )
 
 if __name__ == '__main__':
-    load_info = pipeline.run(fetch_historical_strength_data)
+    load_info = pipeline.run(fetch_alex_strength_data)
+    load_info = pipeline.run(fetch_erik_strength_data)
+
     print(load_info) 
