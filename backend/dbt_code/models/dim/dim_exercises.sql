@@ -1,4 +1,4 @@
-with dim_exercise as (select * from {{ref 'src_exercise' }})
+with dim_exercise as (select * from {{ref 'src' }})
 
 select
     {{ dbt_utils.generate_surrogate_key(['exercise_name', 'muscle_group_primary'])}} as exercise_id,
