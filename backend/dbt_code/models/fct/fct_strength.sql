@@ -1,0 +1,1 @@
+with fct_strength 
