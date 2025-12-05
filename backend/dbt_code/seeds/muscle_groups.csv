@@ -1,0 +1,75 @@
+canonical_exercise_name,primary_muscle_group,secondary_muscle_group
+benchpress,chest,triceps
+incline benchpress,chest,triceps
+decline benchpress,chest,triceps
+push-up,chest,triceps
+dumbbell flyes,chest,shoulders
+cable flyes,chest,shoulders
+pec deck,chest,shoulders
+overhead press,shoulders,triceps
+shoulder press,shoulders,triceps
+military press,shoulders,triceps
+arnold press,shoulders,triceps
+lateral raise,shoulders,none
+front raise,shoulders,none
+rear delt fly,shoulders,back
+chin-up,lats,biceps
+pull-up,lats,biceps
+chest to bar,lats,biceps
+lat pulldown,lats,biceps
+neutral grip pulldown,lats,biceps
+wide grip pulldown,lats,biceps
+seated row,back,biceps
+barbell row,back,biceps
+pendlay row,back,biceps
+dumbbell row,back,biceps
+t-bar row,back,biceps
+face pull,back,shoulders
+deadlift,lower back,glutes
+sumo deadlift,glutes,hamstrings
+romanian deadlift,hamstrings,glutes
+rdl,hamstrings,glutes
+good morning,hamstrings,lower back
+hip thrust,glutes,hamstrings
+glute bridge,glutes,hamstrings
+back extension,lower back,glutes
+squat,quads,glutes
+back squat,quads,glutes
+front squat,quads,glutes
+goblet squat,quads,glutes
+hack squat,quads,glutes
+leg press,quads,glutes
+walking lunge,quads,glutes
+reverse lunge,glutes,quads
+bulgarian split squat,quads,glutes
+leg extension,quads,none
+leg curl,hamstrings,none
+lying leg curl,hamstrings,none
+seated leg curl,hamstrings,none
+calf raise,calves,none
+standing calf raise,calves,none
+seated calf raise,calves,none
+bicep curl,biceps,forearms
+barbell curl,biceps,forearms
+dumbbell curl,biceps,forearms
+incline dumbbell curl,biceps,forearms
+hammer curl,biceps,forearms
+preacher curl,biceps,forearms
+concentration curl,biceps,forearms
+cable curl,biceps,forearms
+tricep pushdown,triceps,forearms
+triceps pushdown,triceps,forearms
+rope pushdown,triceps,forearms
+overhead tricep extension,triceps,shoulders
+skullcrusher,triceps,none
+close grip benchpress,triceps,chest
+dips,chest,triceps
+bench dips,triceps,chest
+plank,core,none
+side plank,core,none
+crunch,core,none
+sit-up,core,hip flexors
+leg raise,core,hip flexors
+hanging leg raise,core,hip flexors
+russian twist,core,obliques
+wood chop,core,obliques
