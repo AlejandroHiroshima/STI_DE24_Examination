@@ -5,19 +5,18 @@ alex_normalized as(
     select
     athlete_first_name,
     athlete_last_name,
-    cast(athlete_date_of_birth as date) as althlete_date_of_birth,
-    cast(athlete_weight_kg as double) as athlete_weight_kg,
+    cast(athlete_date_of_birth as date) as athlete_date_of_birth,
+    cast(athlete_weight_kg as double) as body_weight_kg,
     gender,
     cast(workout_date as date) as workout_date,
     exercise_name,
     muscle_group_primary,
-    muscle_group_secondary,
     cast(set_number as integer) as set_number,
     cast(reps as integer) as reps,
     cast(weight_kg as double) as weight_kg,
     cast(extra_weight_kg as double) as extra_weight_kg,
     cast(time_session as interval) as time_session,
-    cast(null as double) as total_volume_session,
+    cast(total_volume_session as double) as total_volume_session,
     'set' as log_type
 from alex_raw_data
 ),
@@ -27,18 +26,17 @@ erik_normalized as(
     athlete_first_name,
     athlete_last_name,
     cast(athlete_date_of_birth as date) as althlete_date_of_birth,
-    cast(athlete_weight_kg as double) as athlete_weight_kg,
+    cast(athlete_weight_kg as double) as body_weight_kg,
     gender,
     cast(workout_date as date) as workout_date,
     exercise_name,
     muscle_group_primary,
-    muscle_group_secondary,
     cast(set_number as integer) as set_number,
     cast(reps as integer) as reps,
     cast(weight_kg as double) as weight_kg,
     cast(extra_weight_kg as double) as extra_weight_kg,
     cast(time_session as interval) as time_session,
-    total_volume_session,
+    cast(total_volume_session as double) as total_volume_session,
     case when total_volume_session is not null then 'session'
     else 'set'
     end as log_type
@@ -50,4 +48,4 @@ combined as (select * from alex_normalized
               select * from erik_normalized
 )
 
-select * from combined;
+select * from combined
