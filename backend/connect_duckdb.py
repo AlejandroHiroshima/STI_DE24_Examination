@@ -11,7 +11,9 @@ def connect_duckdb(sql_code: str, parameters=None):
     
 df = connect_duckdb("desc;")
 print(df.head())
-    
+
+if __name__ == "main":
+    connect_duckdb()    
     
 
         

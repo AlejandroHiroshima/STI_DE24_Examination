@@ -1,4 +1,4 @@
-with fct_strength (select * from {{ref 'src' }})
+with fct_strength (select * from {{ref ('src') }})
 
 select
     {{ dbt_utils.generate_surrogate_key(['workout_date'])}} AS workout_date_id,

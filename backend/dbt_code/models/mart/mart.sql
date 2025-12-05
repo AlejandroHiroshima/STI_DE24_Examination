@@ -2,7 +2,7 @@ with
     fct_strength as (select * from {{ref('fct_strength')}} ),
     dim_athletes as (select * from {{ref('dim_athletes')}} ),
     dim_date as (select * from {{ref('dim_date')}} ),
-    dim_exercise as (select * from {{ref('dim_exercise')}} )
+    dim_exercise as (select * from {{ref('dim_exercises')}} )
 
 select
     *
