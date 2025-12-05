@@ -1,14 +1,33 @@
-with fct_strength_raw as (
+with raw as (
     select * from {{ ref('src') }}
 ),
 
-normalized_exercise as (
+normalized as (
     select
-        f.*,
-        coalesce(nm.canonical_exercise_name, trim(f.exercise_name)) as canonical_exercise_name
-    from fct_strength_raw f
-    left join {{ ref('exercise_name') }} nm
-           on trim(f.exercise_name) = nm.raw_exercise_name
+        r.*,
+        coalesce(m.canonical_exercise_name, trim(r.exercise_name)) as canonical_exercise_name
+    from raw r
+    left join {{ ref('exercise_name') }} e
+           on trim(r.exercise_name) = e.raw_exercise_name
+),
+
+with_muscle as (
+    select
+        n.*,
+        d.primary_muscle_group
+    from normalized n
+    left join {{ ref('dim_exercises') }} d
+           on n.canonical_exercise_name = d.exercise_name
+),
+
+session_enriched as (
+    select
+        *,
+        string_agg(distinct primary_muscle_group, ', ' order by primary_muscle_group)
+            over (partition by workout_date,
+                             athlete_first_name,
+                             athlete_date_of_birth) as primary_mg_list
+    from with_muscle
 )
 
 select
@@ -20,5 +39,8 @@ select
     weight_kg,
     extra_weight_kg,
     time_session,
-    total_volume_session
-from normalized_exercise
+    total_volume_session,
+    concat(
+        strftime(workout_date, '%d/%m'), ' ',strftime(workout_date, '%a'), ' - ',primary_mg_list
+    ) as exercise_session_name
+from session_enriched

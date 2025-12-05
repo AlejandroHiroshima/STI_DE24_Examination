@@ -9,8 +9,8 @@ normalized_names as (
     select
         coalesce(nm.canonical_exercise_name, s.exercise_name_raw) as canonical_exercise_name
     from src s
-    left join {{ ref('exercise_name') }} nm
-           on s.exercise_name_raw = nm.raw_exercise_name
+    left join {{ ref('exercise_name') }} e
+           on s.exercise_name_raw = e.raw_exercise_name
 
 ), assigned_muscle_groups as (
 
@@ -29,5 +29,8 @@ select
     max(canonical_exercise_name) as exercise_name,  
     primary_muscle_group,
     secondary_muscle_group
-
 from assigned_muscle_groups
+GROUP BY 
+    exercise_id,
+    primary_muscle_group,
+    secondary_muscle_group
