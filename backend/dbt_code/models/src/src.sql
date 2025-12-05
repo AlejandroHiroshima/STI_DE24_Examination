@@ -1,8 +1,8 @@
-with alex_raw_data as (select * from {{ source('strength_table', 'stg_alex') }})
-
-with erik_raw_data as (select * from {{ source('strength_table', 'stg_erik') }})
+with alex_raw_data as (select * from {{ source('strength_table', 'stg_alex') }}),
+ erik_raw_data as (select * from {{ source('strength_table', 'stg_erik') }}),
 
 alex_normalized as(
+    select
     athlete_first_name,
     athlete_last_name,
     cast(athlete_date_of_birth as date) as althlete_date_of_birth,
@@ -20,9 +20,10 @@ alex_normalized as(
     cast(null as double) as total_volume_session,
     'set' as log_type
 from alex_raw_data
-)
+),
 
 erik_normalized as(
+    select
     athlete_first_name,
     athlete_last_name,
     cast(athlete_date_of_birth as date) as althlete_date_of_birth,
@@ -42,7 +43,7 @@ erik_normalized as(
     else 'set'
     end as log_type
 from erik_raw_data
-)
+),
 
 combined as (select * from alex_normalized
               union all
