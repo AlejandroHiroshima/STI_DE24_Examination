@@ -1,36 +1,33 @@
 with src as (
-    SELECT DISTINCT(TRIM(exercise_name)) AS exercise_name_raw,
-        muscle_group_primary
+    SELECT DISTINCT(TRIM(exercise_name)) AS exercise_name_raw
     FROM {{ ref('src') }}
+    WHERE exercise_name IS NOT NULL
 ),
 
-cleaned as (
-    SELECT
-        REGEXP_REPLACE(
-            REGEXP_REPLACE(
-                LOWER(REPLACE(exercise_name_raw, '-', ' ')),
-                ' {2,}', ' ', 'g'
-            ),
-            ' $', '', 'g'
-        ) AS exercise_name,
-        muscle_group_primary
+normalized_names as (
 
-    FROM src
-), normalized AS (
-    SELECT
-        CASE 
-            WHEN exercise_name IS 'bench press' THEN 'benchpress'
-            WHEN exercise_name IS 'chinup' THEN 'chin-up'
-            ELSE exercise_name
-        END AS exercise_name,
-        muscle_group_primary
-    FROM cleaned
-),
+    select
+        coalesce(nm.canonical_exercise_name, s.exercise_name_raw) as canonical_exercise_name
+    from src s
+    left join {{ ref('exercise_name') }} nm
+           on s.exercise_name_raw = nm.raw_exercise_name
+
+), assigned_muscle_groups as (
+
+    select
+        nn.canonical_exercise_name,
+        mg.primary_muscle_group,
+        mg.secondary_muscle_group 
+        from normalized_names nn
+    left join {{ ref('muscle_groups') }} mg
+           on nn.canonical_exercise_name = mg.canonical_exercise_name
+
+)
 
 select
-    {{ dbt_utils.generate_surrogate_key(['exercise_name', 'muscle_group_primary'])}} as exercise_id,
-    exercise_name,
-    muscle_group_primary,
-from
-    cleaned
+    {{ dbt_utils.generate_surrogate_key(['canonical_exercise_name']) }} as exercise_id,
+    max(canonical_exercise_name) as exercise_name,  
+    primary_muscle_group,
+    secondary_muscle_group
 
+from assigned_muscle_groups

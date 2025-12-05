@@ -10,14 +10,13 @@ alex_normalized as(
     gender,
     cast(workout_date as date) as workout_date,
     exercise_name,
-    muscle_group_primary,
     cast(set_number as integer) as set_number,
     cast(reps as integer) as reps,
     cast(weight_kg as double) as weight_kg,
     cast(extra_weight_kg as double) as extra_weight_kg,
     cast(time_session as interval) as time_session,
-    cast(total_volume_session as double) as total_volume_session,
-    'set' as log_type
+    'set' as log_type,
+    0.0 as total_volume_session
 from alex_raw_data
 ),
 
@@ -30,7 +29,6 @@ erik_normalized as(
     gender,
     cast(workout_date as date) as workout_date,
     exercise_name,
-    muscle_group_primary,
     cast(set_number as integer) as set_number,
     cast(reps as integer) as reps,
     cast(weight_kg as double) as weight_kg,
