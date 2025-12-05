@@ -1,4 +1,4 @@
-with fct_strength (select * from {{ref ('src') }})
+with fct_strength as (select * from {{ref ('src') }})
 
 select
     {{ dbt_utils.generate_surrogate_key(['workout_date'])}} AS workout_date_id,
@@ -10,4 +10,4 @@ select
     extra_weight_kg,
     time_session,
     total_volume_session
-from fct_strength;
+from fct_strength

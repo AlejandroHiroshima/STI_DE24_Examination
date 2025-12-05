@@ -2,8 +2,9 @@ import io # io ???
 import requests
 import pandas as pd
 import dlt
-import duckdb
 from constants import DUCKDB_PATH, CSV_URL_ALEX, CSV_URL_ERIK
+
+fix_columns = ["weight_kg", "athlete_weight_kg", "extra_weight_kg"] # "athlete_weight_kg"
 
 @dlt.resource(name="historical_strength_data_alex", write_disposition = "replace", table_name="stg_alex",)
 def fetch_alex_strength_data():
@@ -11,7 +12,9 @@ def fetch_alex_strength_data():
     data.raise_for_status()
     df= pd.read_csv(io.StringIO(data.text))
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
-
+    for c in df.columns:
+        if c in fix_columns:
+            df[c] = df[c].str.replace(',','.')
     for rec in df.to_dict(orient = "records"): 
         yield rec
 
@@ -22,7 +25,9 @@ def fetch_erik_strength_data():
     data.raise_for_status()
     df= pd.read_csv(io.StringIO(data.text))
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
-
+    for c in df.columns:
+        if c in fix_columns:
+            df[c] = df[c].str.replace(',','.')
     for rec in df.to_dict(orient = "records"): 
         yield rec
 

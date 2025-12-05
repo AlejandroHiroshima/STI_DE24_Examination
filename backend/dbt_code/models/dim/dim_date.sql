@@ -1,4 +1,4 @@
-with dim_dates as (select distinct from {{ ref('src')}} )
+with dim_dates as (select distinct workout_date from {{ ref('src')}} )
 
 select
     {{ dbt_utils.generate_surrogate_key(['workout_date'])}} AS workout_date_id,
