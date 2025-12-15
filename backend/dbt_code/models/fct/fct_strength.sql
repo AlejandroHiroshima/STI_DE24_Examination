@@ -5,7 +5,7 @@ with raw as (
 normalized as (
     select
         r.*,
-        coalesce(m.canonical_exercise_name, trim(r.exercise_name)) as canonical_exercise_name
+        coalesce(e.canonical_exercise_name, trim(r.exercise_name)) as canonical_exercise_name
     from raw r
     left join {{ ref('exercise_name') }} e
            on trim(r.exercise_name) = e.raw_exercise_name
