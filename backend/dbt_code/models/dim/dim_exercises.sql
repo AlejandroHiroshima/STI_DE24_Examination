@@ -7,7 +7,7 @@ with src as (
 normalized_names as (
 
     select
-        coalesce(nm.canonical_exercise_name, s.exercise_name_raw) as canonical_exercise_name
+        coalesce(e.canonical_exercise_name, s.exercise_name_raw) as canonical_exercise_name
     from src s
     left join {{ ref('exercise_name') }} e
            on s.exercise_name_raw = e.raw_exercise_name
