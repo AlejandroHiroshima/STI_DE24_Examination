@@ -15,7 +15,7 @@ alex_normalized as(
     cast(weight_kg as double) as weight_kg,
     cast(extra_weight_kg as double) as extra_weight_kg,
     cast(time_session as interval) as time_session,
-    'set' as log_type,
+    {# 'set' as log_type, #}
     0.0 as total_volume_session
 from alex_raw_data
 ),
@@ -35,9 +35,9 @@ erik_normalized as(
     cast(extra_weight_kg as double) as extra_weight_kg,
     cast(time_session as interval) as time_session,
     cast(total_volume_session as double) as total_volume_session,
-    case when total_volume_session is not null then 'session'
+    {# case when total_volume_session is not null then 'session'
     else 'set'
-    end as log_type
+    end as log_type #}
 from erik_raw_data
 ),
 
