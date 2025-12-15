@@ -4,7 +4,7 @@ import pandas as pd
 import dlt
 from constants import DUCKDB_PATH, CSV_URL_ALEX, CSV_URL_ERIK
 
-fix_columns = ["weight_kg", "athlete_weight_kg", "extra_weight_kg"] # "athlete_weight_kg"
+fix_columns = ["weight_kg", "athlete_weight_kg", "extra_weight_kg", "total_volume_session"] # "athlete_weight_kg"
 
 @dlt.resource(name="historical_strength_data_alex", write_disposition = "replace", table_name="stg_alex",)
 def fetch_alex_strength_data():
