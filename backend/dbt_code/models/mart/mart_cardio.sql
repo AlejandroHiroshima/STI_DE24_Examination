@@ -2,6 +2,7 @@ with cardio as (
     SELECT 
         workout_date_id,
         workout_date_local,
+        activity_type,
         COUNT(*) AS total_cardio_sessions,
         SUM(distance_km) AS total_distance_km,
         SUM(moving_time_min) AS total_moving_time_min,
@@ -15,6 +16,7 @@ with cardio as (
     GROUP BY 
         workout_date_id,
         workout_date_local,
+        activity_type
 )
 
 SELECT 

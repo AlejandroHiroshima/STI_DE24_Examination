@@ -3,8 +3,8 @@ with alex_raw_data as (select * from {{ source('strength_table', 'stg_alex') }})
 
 alex_normalized as(
     select
-    initcap(trim(lower(athlete_first_name))) as athlete_first_name,
-    initcap(trim(lower(athlete_last_name))) as athlete_last_name,
+    trim(lower(athlete_first_name)) as athlete_first_name,
+    trim(lower(athlete_last_name)) as athlete_last_name,
     cast(athlete_date_of_birth as date) as athlete_date_of_birth,
     cast(athlete_weight_kg as double) as body_weight_kg,
     gender,
