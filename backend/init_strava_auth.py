@@ -1,6 +1,4 @@
 # OBS SKA BARA KÖRAS EN GÅNG!
-
-# init_strava_auth.py
 import os
 import requests
 from dotenv import load_dotenv
@@ -36,7 +34,6 @@ def upsert_env_vars(new_vars: dict, env_path: str = ".env") -> None:
             else:
                 f.write(line)
 
-        # Lägg till ev. nya nycklar
         for k, v in new_vars.items():
             if k not in existing_keys:
                 f.write(f"{k}={v}\n")

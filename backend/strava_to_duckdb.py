@@ -1,4 +1,3 @@
-# strava_to_duckdb.py
 import os
 import requests
 from datetime import datetime
@@ -6,7 +5,6 @@ from dotenv import load_dotenv
 import dlt
 from constants import DUCKDB_PATH
 
-# Load environment variables
 load_dotenv()
 
 CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
@@ -96,11 +94,7 @@ def load_to_duckdb(activities):
 def main():
     after_date = datetime(2021, 3, 15)
     before_date = datetime.now()
-    
-    print(f"📅 Fetching activities from {after_date.date()} to {before_date.date()}")
-    
     access_token = refresh_access_token()
-    
     activities = fetch_strava_activities(access_token, after_date, before_date)
     
     if activities:

@@ -4,7 +4,7 @@ with dim_dates as (
 
     union
 
-    select distinct workout_date_local
+    select distinct workout_date_local as workout_date
     from {{ ref('src_cardio')}}
     )
 
