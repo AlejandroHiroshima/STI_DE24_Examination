@@ -6,20 +6,15 @@ with cardio_raw as (
 
 normalized as (
     SELECT
-        {# id as activity_id,
-        athlete_id, #}
-        {# cast(start_date as timestamp) as start_datetime, #}
-        cast(start_date_local as timestamp) as start_datetime_local,
         date(start_date_local) as workout_date_local,
-        {# timezone, #}
         type as activity_type,
-        name as name_of_workout,
-        distance,
-        elapsed_time,
-        average_heartrate,
-        max_heartrate,
-        average_speed,
-        max_speed
+        distance AS distance_m,
+        elapsed_time AS total_time_s,
+        moving_time AS moving_time_s,
+        moving_time_h,
+        average_heartrate AS average_heartrate_bpm,
+        max_heartrate AS max_heartrate_bpm,
+        max_speed AS max_speed_m_per_s
     FROM cardio_raw
 )
 
