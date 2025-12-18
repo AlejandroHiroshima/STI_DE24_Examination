@@ -1,8 +1,10 @@
 import duckdb
-from constants import DUCKDB_PATH
+from pathlib import Path
+
+# DUCKB_PATH = Path(__file__).parents[1] / "strength.duckdb"
 
 def connect_duckdb(sql_code: str, parameters=None):
-    with duckdb.connect(DUCKDB_PATH) as conn:
+    with duckdb.connect(Path(__file__).parents[1] / "strength.duckdb") as conn:
         
         connection = conn.execute(sql_code, parameters)
         
@@ -12,8 +14,9 @@ def connect_duckdb(sql_code: str, parameters=None):
 df = connect_duckdb("desc;")
 print(df.head())
 
-if __name__ == "main":
-    connect_duckdb()    
+if __name__ == "__main__":
+    connect_duckdb()
+ 
     
 
         

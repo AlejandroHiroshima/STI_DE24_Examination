@@ -1,14 +1,15 @@
 import taipy.gui.builder as tgb
 from taipy.gui import Gui
 from taipy.gui import navigate
-from alex import alex_page
-from erik import erik_page
+from cardio import cardio_page
+from strength import strength_page
+from pathlib import Path
 
 with tgb.Page() as start_page:
     tgb.toggle(theme=True)
     with tgb.part(class_name="card text-center card-margin"):
         tgb.text("# Training dashboard", mode="md")
-        tgb.image("../files/logo.jpg")
+        tgb.image("logo.jpg")
         
         with tgb.part():
             tgb.text("## Choose athlete:", mode="md")
@@ -18,18 +19,18 @@ with tgb.Page() as start_page:
                     with tgb.part(class_name="text-center card-margin"):
                         with tgb.part(class_name="card card-margin"):
                                 with tgb.part():
-                                    tgb.text('#### **Erik**', mode="md")
-                                    tgb.image("../files/erik_profile.jpg",
-                                        on_action=lambda state: navigate(state, to="erik")
+                                    tgb.text('#### **Strength**', mode="md")
+                                    tgb.image("erik_profile.jpg",
+                                        on_action=lambda state: navigate(state, to="strength")
                                     )
 
                 with tgb.part() as column_alex:
                         with tgb.part(class_name="text-center card-margin"):
                             with tgb.part(class_name="card card-margin"):
                                     with tgb.part():
-                                        tgb.text('#### **Alexander**', mode="md")
-                                        tgb.image("../files/erik_profile.jpg",
-                                            on_action=lambda state: navigate(state, to="alex")
+                                        tgb.text('#### **Cardio**', mode="md")
+                                        tgb.image("erik_profile.jpg",
+                                            on_action=lambda state: navigate(state, to="cardio")
                                         )            
                         
 if __name__ == "__main__":
@@ -38,8 +39,8 @@ if __name__ == "__main__":
 
     pages = {
             "dashboard": start_page,
-            "erik": erik_page,
-            "alex": alex_page,
+            "strength": strength_page,
+            "cardio": cardio_page,
         }
         
         
