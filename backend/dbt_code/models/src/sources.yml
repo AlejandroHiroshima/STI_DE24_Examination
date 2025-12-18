@@ -7,3 +7,6 @@ sources:
       
       - name: stg_erik
         identifier: stg_erik
+
+      - name: staging_cardio
+        identifier: staging_cardio
