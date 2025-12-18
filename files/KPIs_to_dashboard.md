@@ -1,6 +1,6 @@
-# Welcome to training dashboard
+# Strength
 
-## Dropdown/sidebar to choose Stength/Cardio training
+## Dropdown/ Choose athlete
 
 ## Dropdown to filter by last 7/30/90/365 Days:
 
