@@ -4,9 +4,11 @@ from connect_duckdb import query_strength_duckdb
 import datetime
 import pandas as pd
 
-people = ["Erik", "alexander"]
-selected_athlete = "Erik"
-start_date = datetime.date(2014,1,6)
+# ---------- Global state-variables
+
+people = ["erik", "alexander"]
+selected_athlete = "erik"
+start_date = datetime.date(2025,12,1)
 end_date = datetime.date.today()
 dates = [start_date, end_date]
 show_data = False
@@ -20,6 +22,10 @@ def on_filter_click(state):
     state.strength_data = df
     state.show_data= True
 
+# -- Toggle back to dashboard button 
+def go_dashboard(state):
+    navigate(state, to="dashboard")
+    
 
 with tgb.Page() as strength_page:
     tgb.toggle(theme=True)
@@ -60,6 +66,10 @@ with tgb.Page() as strength_page:
                                 tgb.text("{strength_data['total_volume_session'].sum()}", class_name="h2")
                             else:
                                 tgb.text("{strength_data['weight_kg'].sum()}", class_name="h2")
+                                
+                            # DEBUG
+                            tgb.text("Rows: {len(strength_data)}", mode="md")
+                            tgb.text("Sample volume: {strength_data['total_volume_session'].head()}", mode="md")
 
                         with tgb.part(class_name="card"):
                             tgb.text("**Total amount of sets**", mode="md")
@@ -81,7 +91,7 @@ with tgb.Page() as strength_page:
 
 
                 tgb.button(
-                    "Tillbaka till dashboard",
-                    on_action=lambda state: navigate(state, to="dashboard")
-                ) 
+                    "Back to main page",
+                    on_action=go_dashboard,
+                )
 

@@ -1,31 +1,57 @@
-
-import taipy.gui.builder as tgb
-from taipy.gui import navigate
-from connect_duckdb import query_strength_duckdb
 import datetime
 import pandas as pd
+import taipy.gui.builder as tgb
+from taipy.gui import navigate
+from connect_duckdb import query_cardio_duckdb
 
-people = ["Erik", "alexander"]
-selected_athlete = "Erik"
-start_date = datetime.date(2014,1,6)
+
+# ---------- Global state-variables
+
+activity_types = ["All", "Run", "Ride", "Spinning"]
+selected_activity = "All"
+
+start_date = datetime.date(2025, 11, 10)
 end_date = datetime.date.today()
 dates = [start_date, end_date]
+
 show_data = False
-strength_data = pd.DataFrame()
+cardio_data = pd.DataFrame()
+
+
+# ---------- Callbacks 
 
 def on_filter_click(state):
-    athlete = state.selected_athlete
-    start_date = state.dates[0].strftime("%Y-%m-%d")
-    end_date = state.dates[1].strftime("%Y-%m-%d")
-    df= query_strength_duckdb(athlete, start_date, end_date)
-    state.strength_data = df
-    state.show_data= True
+    activity_type = state.selected_activity
+    start_date_str = state.dates[0].strftime("%Y-%m-%d")
+    end_date_str = state.dates[1].strftime("%Y-%m-%d")
 
+    df = query_cardio_duckdb(activity_type, start_date_str, end_date_str)
+    state.cardio_data = df
+    state.show_data = True
+
+# -- Toggle back to dashboard button 
+def go_dashboard(state):
+    navigate(state, to="dashboard")
+    
+    
+#--- Convert minutes to hours and minutes
+
+def format_minutes_to_h_m(total_minutes: float) -> str:
+    if total_minutes is None or pd.isna(total_minutes):
+        return "0 h 0 min"
+    total_minutes = int(round(total_minutes))
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+    return f"{hours} h {minutes}"
+
+
+# ---------- Page
 
 with tgb.Page() as cardio_page:
     tgb.toggle(theme=True)
+
     with tgb.part(class_name="card text-center card-margin"):
-        tgb.text("# Strength", mode="md")
+        tgb.text("# Cardio", mode="md")
 
     with tgb.part():
         with tgb.part(class_name="text-center card-margin"):
@@ -33,55 +59,49 @@ with tgb.Page() as cardio_page:
                 with tgb.layout(columns="1 1"):
                     with tgb.part():
                         tgb.selector(
-                            value="{selected_athlete}",
-                            lov=people,
+                            value="{selected_activity}",
+                            lov=activity_types,
                             dropdown=True,
-                            label = "Choose athlete"
+                            label="Choose activity type",
                         )
                     with tgb.part():
                         tgb.date_range("{dates}", with_time=False, format="yyyy-MM-dd")
 
                 with tgb.part():
-                    tgb.button(
-                        "Filter",
-                        on_action= on_filter_click
-                    )        
+                    tgb.button("Filter", on_action=on_filter_click)
+
             with tgb.part(render="{show_data}"):
                 with tgb.part(class_name="card card-margin"):
                     tgb.text("## KPI's", mode="md")
 
                     with tgb.layout(columns="1 1 1"):
                         with tgb.part(class_name="card"):
-                            tgb.text("**Total gym sessions**", mode="md")
-                            tgb.text("{len(strength_data['full_workout_date'].unique())}", class_name="h2")
-                
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Total volume (kg)**", mode="md")
-                            if selected_athlete == 'Erik':
-                                tgb.text("{strength_data['total_volume_session'].sum()}", class_name="h2")
-                            else:
-                                tgb.text("{strength_data['weight_kg'].sum()}", class_name="h2")
+                            tgb.text("**Total sessions**", mode="md")
+                            tgb.text("{len(cardio_data)}", class_name="h2")
 
                         with tgb.part(class_name="card"):
-                            tgb.text("**Total amount of sets**", mode="md")
-                            tgb.text("{len(strength_data)}", class_name="h2")
+                            tgb.text("**Total distance (km)**", mode="md")
+                            tgb.text("{round(cardio_data['total_distance_km'].sum(), 1)}", class_name="h2")
 
-                    with tgb.layout(columns="1 1 1"):
                         with tgb.part(class_name="card"):
-                            tgb.text("**Total time spent**", mode="md")
-                            tgb.text("{(strength_data['time_session'].sum())}", class_name="h2")
-                
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Total number repetitions**", mode="md")
-                            tgb.text("{strength_data['reps'].sum()}", class_name="h2")
-                    
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Heaviest set**", mode="md")
-                            tgb.text("{strength_data['weight_kg'].max()}", class_name="h2")
-                        
+                            tgb.text("**Average speed (km/h)**", mode="md")
+                            tgb.text("{round(cardio_data['average_speed_kmh'].mean(), 1)}", class_name="h2")
 
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Total time**", mode="md")
+                            tgb.text(
+                                "{format_minutes_to_h_m(cardio_data['average_moving_time_min'].sum())}",
+                                class_name="h2",
+                            )
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Average heart rate (bpm)**", mode="md")
+                            tgb.text("{round(cardio_data['average_heartrate_bpm'].mean())}", class_name="h2")
+
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Max heart rate (bpm)**", mode="md")
+                            tgb.text("{round(cardio_data['max_heartrate_bpm'].max(), 0)}", class_name="h2")
 
                 tgb.button(
-                    "Tillbaka till dashboard",
-                    on_action=lambda state: navigate(state, to="dashboard")
-                ) 
+                    "Back to main page",
+                    on_action=go_dashboard,
+                )
