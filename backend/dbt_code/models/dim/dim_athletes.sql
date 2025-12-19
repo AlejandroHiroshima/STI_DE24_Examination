@@ -1,7 +1,7 @@
 with raw as (
     select
-        athlete_first_name,
-        athlete_last_name,
+        trim(lower(athlete_first_name)) as athlete_first_name,
+        trim(lower(athlete_last_name)) as athlete_last_name,
         athlete_date_of_birth,
         body_weight_kg,
         gender,
@@ -24,8 +24,8 @@ ranked as (
 
 latest_weight as (
     select
-        athlete_first_name,
-        athlete_last_name,
+        trim(lower(athlete_first_name)) as athlete_first_name,
+        trim(lower(athlete_last_name)) as athlete_last_name,
         athlete_date_of_birth,
         body_weight_kg,
         gender
@@ -35,8 +35,8 @@ latest_weight as (
 
 distinct_athletes as (
     select distinct
-        athlete_first_name,
-        athlete_last_name,
+        trim(lower(athlete_first_name)) as athlete_first_name,
+        trim(lower(athlete_last_name)) as athlete_last_name,
         athlete_date_of_birth,
         gender
     from raw

@@ -4,6 +4,8 @@ from taipy.gui import navigate
 from cardio import cardio_page
 from strength import strength_page
 from pathlib import Path
+import datetime
+
 
 with tgb.Page() as start_page:
     tgb.toggle(theme=True)
@@ -34,14 +36,11 @@ with tgb.Page() as start_page:
                                         )            
                         
 if __name__ == "__main__":
-    
-
-
     pages = {
-            "dashboard": start_page,
-            "strength": strength_page,
-            "cardio": cardio_page,
-        }
-        
-        
+         "/": start_page,
+        "dashboard": start_page,
+        "strength": strength_page,
+        "cardio": cardio_page,
+    }
+    
     Gui(pages=pages).run(dark_mode=True, use_reloader=True, port=8081)
