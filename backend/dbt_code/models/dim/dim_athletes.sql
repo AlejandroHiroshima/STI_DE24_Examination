@@ -43,7 +43,7 @@ distinct_athletes as (
 )
 
 select
-    {{ dbt_utils.generate_surrogate_key(['da.athlete_first_name', 'da.athlete_date_of_birth']) }} as athlete_id,
+    {{ dbt_utils.generate_surrogate_key(['lower(trim(da.athlete_first_name))', 'da.athlete_date_of_birth']) }} as athlete_id,
     da.athlete_first_name,
     da.athlete_last_name,
     da.athlete_date_of_birth,
