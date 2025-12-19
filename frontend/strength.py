@@ -59,7 +59,7 @@ with tgb.Page() as strength_page:
                             if selected_athlete == 'Erik':
                                 tgb.text("{strength_data['total_volume_session'].sum()}", class_name="h2")
                             else:
-                                tgb.text("{strength_data['weight_kg].sum()}", class_name="h2")
+                                tgb.text("{strength_data['weight_kg'].sum()}", class_name="h2")
 
                         with tgb.part(class_name="card"):
                             tgb.text("**Total amount of sets**", mode="md")
@@ -82,6 +82,6 @@ with tgb.Page() as strength_page:
 
                 tgb.button(
                     "Tillbaka till dashboard",
-                    on_action=lambda state: navigate(state, to="/")
+                    on_action=lambda state: navigate(state, to="dashboard")
                 ) 
 

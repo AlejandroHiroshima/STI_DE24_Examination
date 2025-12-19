@@ -39,11 +39,25 @@ def query_strength_duckdb(athlete_name: str, start_date: str, end_date: str) -> 
     #     print("  - Athlete name spelling")
     #     print("  - Date range")
     # print(f"Looking for DB at: {db_path}")
-    # print(f"DB exists: {db_path.exists()}")    
+    # print(f"DB exists: {db_path.exists()}")   
+    
+def query_cardio_duckdb(athlete_name: str, start_date: str, end_date: str) -> pd.DataFrame :
+    with duckdb.connect(str(db_path), read_only=True) as conn:
+        query=(f"""
+            SELECT 
+                *
+            FROM
+                main_mart.mart_cardio
+            WHERE
+                full_workout_date BETWEEN ? AND ?;    
+""")    
+        result = conn.execute(query, [athlete_name, start_date, end_date] )    
+        return result.df() 
 
 if __name__ == "__main__":
     with duckdb.connect(str(db_path), read_only=True) as conn:
      print(conn.execute("""
-                SELECT DISTINCT athlete_first_name 
-                FROM main_mart.mart_strength
+                SELECT 
+                *
+                FROM main_mart.mart_cardio
             """).df())
