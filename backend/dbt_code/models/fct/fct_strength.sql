@@ -32,7 +32,7 @@ session_enriched as (
 
 select
     {{ dbt_utils.generate_surrogate_key(['workout_date']) }} as workout_date_id,
-    {{ dbt_utils.generate_surrogate_key(['athlete_first_name', 'athlete_date_of_birth']) }} as athlete_id,
+    {{ dbt_utils.generate_surrogate_key(['lower(trim(athlete_first_name))', 'athlete_date_of_birth']) }} as athlete_id,
     {{ dbt_utils.generate_surrogate_key(['canonical_exercise_name']) }} as exercise_id,
     set_number,
     reps,

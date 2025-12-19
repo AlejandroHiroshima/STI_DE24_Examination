@@ -7,9 +7,9 @@ alex_normalized as(
     trim(lower(athlete_last_name)) as athlete_last_name, #}
     'alexander' as athlete_first_name,
     'hrachovina' as athlete_last_name,
-    cast(athlete_date_of_birth as date) as athlete_date_of_birth,
+    cast('1985-06-24' as date) as athlete_date_of_birth,
+    'male' as gender,
     cast(athlete_weight_kg as double) as body_weight_kg,
-    gender,
     cast(workout_date as date) as workout_date,
     exercise_name,
     cast(set_number as integer) as set_number,
@@ -28,9 +28,9 @@ erik_normalized as(
     trim(lower(athlete_last_name)) as athlete_last_name, #}
     'erik' as athlete_first_name,
     'unevik' as athlete_last_name,
-    cast(athlete_date_of_birth as date) as althlete_date_of_birth,
+    cast('1988-03-22' as date) as athlete_date_of_birth,
+    'male' AS gender,
     cast(athlete_weight_kg as double) as body_weight_kg,
-    gender,
     cast(workout_date as date) as workout_date,
     exercise_name,
     cast(set_number as integer) as set_number,
