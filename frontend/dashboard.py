@@ -3,8 +3,7 @@ from taipy.gui import Gui
 from taipy.gui import navigate
 from cardio import cardio_page
 from strength import strength_page
-from pathlib import Path
-import datetime
+
 
 
 with tgb.Page() as start_page:
@@ -14,7 +13,7 @@ with tgb.Page() as start_page:
         tgb.image("logo.jpg")
         
         with tgb.part():
-            tgb.text("## Choose athlete:", mode="md")
+            tgb.text("## Choose activity:", mode="md")
             with tgb.layout(columns="1 1"):
 
                 with tgb.part() as column_erik:
@@ -37,7 +36,6 @@ with tgb.Page() as start_page:
                         
 if __name__ == "__main__":
     pages = {
-         "/": start_page,
         "dashboard": start_page,
         "strength": strength_page,
         "cardio": cardio_page,

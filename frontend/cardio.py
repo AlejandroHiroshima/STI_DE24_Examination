@@ -1,9 +1,55 @@
-
+import datetime
+import pandas as pd
 import taipy.gui.builder as tgb
 from taipy.gui import navigate
+from connect_duckdb import query_cardio_duckdb
+
+
+# ---------- Global state-variables
+
+activity_types = ["All", "Run", "Ride", "Spinning"]
+selected_activity = "All"
+
+start_date = datetime.date(2025, 11, 10)
+end_date = datetime.date.today()
+dates = [start_date, end_date]
+
+show_data = False
+cardio_data = pd.DataFrame()
+
+
+# ---------- Callbacks 
+
+def on_filter_click(state):
+    activity_type = state.selected_activity
+    start_date_str = state.dates[0].strftime("%Y-%m-%d")
+    end_date_str = state.dates[1].strftime("%Y-%m-%d")
+
+    df = query_cardio_duckdb(activity_type, start_date_str, end_date_str)
+    state.cardio_data = df
+    state.show_data = True
+
+# -- Toggle back to dashboard button 
+def go_dashboard(state):
+    navigate(state, to="dashboard")
+    
+    
+#--- Convert minutes to hours and minutes
+
+def format_minutes_to_h_m(total_minutes: float) -> str:
+    if total_minutes is None or pd.isna(total_minutes):
+        return "0 h 0 min"
+    total_minutes = int(round(total_minutes))
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+    return f"{hours} h {minutes}"
+
+
+# ---------- Page
 
 with tgb.Page() as cardio_page:
     tgb.toggle(theme=True)
+
     with tgb.part(class_name="card text-center card-margin"):
         tgb.text("# Cardio", mode="md")
 
@@ -12,9 +58,50 @@ with tgb.Page() as cardio_page:
             with tgb.part(class_name="card card-margin"):
                 with tgb.layout(columns="1 1"):
                     with tgb.part():
-                        tgb.text("### Cardio", mode="md")
-                
+                        tgb.selector(
+                            value="{selected_activity}",
+                            lov=activity_types,
+                            dropdown=True,
+                            label="Choose activity type",
+                        )
+                    with tgb.part():
+                        tgb.date_range("{dates}", with_time=False, format="yyyy-MM-dd")
+
+                with tgb.part():
+                    tgb.button("Filter", on_action=on_filter_click)
+
+            with tgb.part(render="{show_data}"):
+                with tgb.part(class_name="card card-margin"):
+                    tgb.text("## KPI's", mode="md")
+
+                    with tgb.layout(columns="1 1 1"):
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Total sessions**", mode="md")
+                            tgb.text("{len(cardio_data)}", class_name="h2")
+
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Total distance (km)**", mode="md")
+                            tgb.text("{round(cardio_data['total_distance_km'].sum(), 1)}", class_name="h2")
+
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Average speed (km/h)**", mode="md")
+                            tgb.text("{round(cardio_data['average_speed_kmh'].mean(), 1)}", class_name="h2")
+
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Total time**", mode="md")
+                            tgb.text(
+                                "{format_minutes_to_h_m(cardio_data['average_moving_time_min'].sum())}",
+                                class_name="h2",
+                            )
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Average heart rate (bpm)**", mode="md")
+                            tgb.text("{round(cardio_data['average_heartrate_bpm'].mean())}", class_name="h2")
+
+                        with tgb.part(class_name="card"):
+                            tgb.text("**Max heart rate (bpm)**", mode="md")
+                            tgb.text("{round(cardio_data['max_heartrate_bpm'].max(), 0)}", class_name="h2")
+
                 tgb.button(
-                    "Tillbaka till dashboard",
-                    on_action=lambda state: navigate(state, to="/")
+                    "Back to main page",
+                    on_action=go_dashboard,
                 )
