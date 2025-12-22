@@ -20,7 +20,7 @@ def query_strength_duckdb(athlete_name: str, start_date: str, end_date: str) -> 
             AND 
                 exercise_name IS NOT NULL;    
 """)    
-        result = conn.execute(query, [athlete_name, start_date, end_date] )    
+        result = conn.execute(query, [athlete_name.lower(), start_date, end_date] )    
         return result.df()
     
 #--- Ingest Cardiodata to dashboard
