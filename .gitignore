@@ -211,3 +211,5 @@ secrets.toml
 **/secrets.toml
 .dlt/
 **/.dlt/
+
+*.duckdb
