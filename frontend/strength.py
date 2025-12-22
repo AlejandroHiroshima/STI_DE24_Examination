@@ -83,7 +83,12 @@ with tgb.Page() as strength_page:
                             tgb.text(
                                 "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'weight_kg']} kg × "
                                 "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'reps']} reps",
-                                class_name="h2"
+                                class_name="h2")
+                            tgb.text(
+                                " on {strength_data.loc[strength_data['weight_kg'].idxmax(), 'day_name']}"
+                                " {strength_data.loc[strength_data['weight_kg'].idxmax(), 'month']}"
+                                "/{strength_data.loc[strength_data['weight_kg'].idxmax(), 'day']}"
+                                , class_name="h5"
                             )
                         
 
