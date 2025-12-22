@@ -4,10 +4,8 @@ from connect_duckdb import query_strength_duckdb
 import datetime
 import pandas as pd
 
-# ---------- Global state-variables
-
-people = ["erik", "alexander"]
-selected_athlete = "erik"
+people = ["Erik", "Alexander"]
+selected_athlete = "Erik"
 start_date = datetime.date(2025,12,1)
 end_date = datetime.date.today()
 dates = [start_date, end_date]
@@ -62,15 +60,11 @@ with tgb.Page() as strength_page:
                 
                         with tgb.part(class_name="card"):
                             tgb.text("**Total volume (kg)**", mode="md")
-                            if selected_athlete == 'Erik':
-                                tgb.text("{strength_data['total_volume_session'].sum()}", class_name="h2")
-                            else:
-                                tgb.text("{strength_data['weight_kg'].sum()}", class_name="h2")
+                            with tgb.part(render="{selected_athlete == 'Erik'}"):
+                                tgb.text("{round(strength_data['total_volume_session'].sum()*1000, 1)}", class_name="h2")
+                            with tgb.part(render="{selected_athlete == 'Alexander'}"):
+                                tgb.text("{round((strength_data['weight_kg'] * strength_data['reps']).sum(), 1)}", class_name="h2")
                                 
-                            # DEBUG
-                            tgb.text("Rows: {len(strength_data)}", mode="md")
-                            tgb.text("Sample volume: {strength_data['total_volume_session'].head()}", mode="md")
-
                         with tgb.part(class_name="card"):
                             tgb.text("**Total amount of sets**", mode="md")
                             tgb.text("{len(strength_data)}", class_name="h2")
@@ -86,7 +80,11 @@ with tgb.Page() as strength_page:
                     
                         with tgb.part(class_name="card"):
                             tgb.text("**Heaviest set**", mode="md")
-                            tgb.text("{strength_data['weight_kg'].max()}", class_name="h2")
+                            tgb.text(
+                                "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'weight_kg']} kg × "
+                                "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'reps']} reps",
+                                class_name="h2"
+                            )
                         
 
 
