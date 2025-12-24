@@ -12,6 +12,8 @@ end_date = datetime.date.today()
 dates = [start_date, end_date]
 show_data = False
 pie_figure= None
+selected_exercise = None
+selected_session = None
 strength_data = pd.DataFrame()
 weekly_volume = pd.DataFrame()
 top_exercises = pd.DataFrame()
@@ -48,11 +50,15 @@ def on_filter_click(state):
         hole=0.5,
         title="Share of total volume per exercise"
     )
+    unique_exercises = sorted(df['exercise_name'].dropna().unique().tolist())
+    unique_sessions= sorted(df['exercise_session_name'].dropna().unique().tolist())
     
     state.strength_data = df
     state.top_exercises = top_exercises
     state.weekly_volume = weekly
     state.pie_figure = fig
+    state.selected_exercise = unique_exercises[0] 
+    state.selected_session = unique_sessions[0] 
     state.show_data = True
     
 def format_timedelta_to_h_m(td) -> str:
@@ -155,7 +161,8 @@ with tgb.Page() as strength_page:
                             "/{strength_data.loc[strength_data['weight_kg'].idxmax(), 'month']}"
                             , class_name="h5"
                         )
-                    
+                tgb.text
+
                 tgb.button(
                     "Back to main page",
                     on_action=go_dashboard,
