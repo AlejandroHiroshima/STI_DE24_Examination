@@ -161,7 +161,34 @@ with tgb.Page() as strength_page:
                             "/{strength_data.loc[strength_data['weight_kg'].idxmax(), 'month']}"
                             , class_name="h5"
                         )
-                tgb.text
+                tgb.text("## Exercise focus", mode="md")
+                with tgb.part(class_name="card card-margin"):
+                    with tgb.layout(columns= "1 2"):
+                        with tgb.part():
+                            tgb.selector(
+                                value= "{selected_exercise}",
+                                lov="{sorted(strength_data['exercise_name'].dropna().unique().tolist())}",
+                                dropdown=True, 
+                                label="Choose exercise")
+                        with tgb.part(render= "{selected_exercise is not None}"):
+                            tgb.text("**Total volume (kg)**", mode= "md")
+                            tgb.text("{round(strength_data[strength_data['exercise_name'] == selected_exercise]['volume_kg'].sum(), 1)}", 
+                                    class_name="h3")
+                            tgb.text("**Total sets**", mode="md")
+                            tgb.text("{len(strength_data[strength_data['exercise_name'] == selected_exercise])}", class_name="h3")
+                            tgb.text("**Max weight**", mode="md")
+                            tgb.text("{strength_data[strength_data['exercise_name'] == selected_exercise]['weight_kg'].max()} kg",
+                                     class_name="h3")
+                    with tgb.part():
+                        tgb.chart(
+                            "{strength_data[strength_data['exercise_name'] == selected_exercise]}",
+                            x= "full_workout_date",
+                            y="volume_kg",
+                            type="line",
+                            title="Volume over time for selected exercise: {selected_exercise}",
+                            height="300px"
+                        )
+                with tgb.part(class_name="card card-margin")
 
                 tgb.button(
                     "Back to main page",
