@@ -1,9 +1,8 @@
 import taipy.gui.builder as tgb
 from taipy.gui import navigate
-from connect_duckdb import query_strength_duckdb
+from strength_utils import on_filter_click
 import datetime
 import pandas as pd
-import plotly.express as px
 
 people = ["Erik", "Alexander"]
 selected_athlete = "Erik"
@@ -17,49 +16,6 @@ selected_session = None
 strength_data = pd.DataFrame()
 weekly_volume = pd.DataFrame()
 top_exercises = pd.DataFrame()
-
-def on_filter_click(state):
-    athlete = state.selected_athlete
-    start_date = state.dates[0].strftime("%Y-%m-%d")
-    end_date = state.dates[1].strftime("%Y-%m-%d")
-    df= query_strength_duckdb(athlete, start_date, end_date)    
-    
-    if athlete == "Erik":
-        df["volume_kg"] = df["total_volume_session"] * 1000
-    else:
-        df["volume_kg"] = df["weight_kg"] * df["reps"]
-    
-    df["full_workout_date"] = pd.to_datetime(df["full_workout_date"])
-    df["year_week"] = df["full_workout_date"].dt.strftime("%Y week%V")
-    
-    weekly = (
-        df.groupby("year_week", as_index=False)["volume_kg"]
-          .sum()
-          .sort_values("year_week")
-    )
-    top_exercises = (
-        df.groupby("exercise_name", as_index=False)['volume_kg']
-        .sum()
-        .sort_values("volume_kg", ascending=False)
-        .head(5)
-    )
-    fig = px.pie(
-        top_exercises,
-        values="volume_kg",
-        names= "exercise_name",
-        hole=0.5,
-        title="Share of total volume per exercise"
-    )
-    unique_exercises = sorted(df['exercise_name'].dropna().unique().tolist())
-    unique_sessions= sorted(df['exercise_session_name'].dropna().unique().tolist())
-    
-    state.strength_data = df
-    state.top_exercises = top_exercises
-    state.weekly_volume = weekly
-    state.pie_figure = fig
-    state.selected_exercise = unique_exercises[0] 
-    state.selected_session = unique_sessions[0] 
-    state.show_data = True
     
 def format_timedelta_to_h_m(td) -> str:
     if td is None or pd.isna(td):
@@ -135,14 +91,12 @@ with tgb.Page() as strength_page:
                     with tgb.part(class_name="card"):
                         tgb.text("**Total amount of sets**", mode="md")
                         tgb.text("{len(strength_data)}", class_name="h2")
-
             
                     with tgb.part(class_name="card"):
                         tgb.text("**Total time**", mode="md")
                         tgb.text(
                             "{format_timedelta_to_h_m(strength_data['time_session'].sum())}",
-                            class_name="h2"
-                        )
+                            class_name="h2")
             
                     with tgb.part(class_name="card"):
                         tgb.text("**Total number repetitions**", mode="md")
@@ -163,32 +117,55 @@ with tgb.Page() as strength_page:
                         )
                 tgb.text("## Exercise focus", mode="md")
                 with tgb.part(class_name="card card-margin"):
-                    with tgb.layout(columns= "1 2"):
+                    with tgb.layout(columns= "2 1 1 1"):
                         with tgb.part():
                             tgb.selector(
                                 value= "{selected_exercise}",
                                 lov="{sorted(strength_data['exercise_name'].dropna().unique().tolist())}",
                                 dropdown=True, 
                                 label="Choose exercise")
-                        with tgb.part(render= "{selected_exercise is not None}"):
+                    
+                        with tgb.part(render= "{selected_exercise is not None}"):    
                             tgb.text("**Total volume (kg)**", mode= "md")
                             tgb.text("{round(strength_data[strength_data['exercise_name'] == selected_exercise]['volume_kg'].sum(), 1)}", 
                                     class_name="h3")
+                        with tgb.part(render= "{selected_exercise is not None}"):    
                             tgb.text("**Total sets**", mode="md")
                             tgb.text("{len(strength_data[strength_data['exercise_name'] == selected_exercise])}", class_name="h3")
+                        with tgb.part(render= "{selected_exercise is not None}"):    
                             tgb.text("**Max weight**", mode="md")
                             tgb.text("{strength_data[strength_data['exercise_name'] == selected_exercise]['weight_kg'].max()} kg",
                                      class_name="h3")
                     with tgb.part():
                         tgb.chart(
-                            "{strength_data[strength_data['exercise_name'] == selected_exercise]}",
+                            "{strength_data[strength_data['exercise_name'] == selected_exercise].groupby('full_workout_date', as_index= False)['volume_kg'].sum()}",
                             x= "full_workout_date",
                             y="volume_kg",
                             type="line",
                             title="Volume over time for selected exercise: {selected_exercise}",
                             height="300px"
                         )
-                with tgb.part(class_name="card card-margin")
+                tgb.text("## Session explorer", mode="md")
+                with tgb.part(class_name="card card-margin"):
+                    tgb.selector("{selected_session}",
+                                lov="{sorted(strength_data['exercise_session_name'].dropna().unique().tolist())}",
+                                dropdown=True,
+                                label="Choose session")
+                    with tgb.part(render="{selected_session is not None}"):
+                        with tgb.layout(columns="1 1 1"):
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Session volume (kg)**", mode="md")
+                                tgb.text("{round(strength_data[strength_data['exercise_session_name'] == selected_session]['volume_kg'].sum(), 1)}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Exercises**", mode="md")    
+                                tgb.text("{len(strength_data[strength_data['exercise_session_name'] == selected_session]['exercise_name'].unique())}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Total sets**", mode="md")    
+                                tgb.text("{len(strength_data[strength_data['exercise_session_name'] == selected_session])}", class_name="h3")
+                        tgb.table(
+                            "{strength_data[strength_data['exercise_session_name'] == selected_session]"
+                            "[['exercise_name', 'set_number', 'reps', 'weight_kg']]"
+                            ".sort_values(['exercise_name', 'set_number'])}")
 
                 tgb.button(
                     "Back to main page",
