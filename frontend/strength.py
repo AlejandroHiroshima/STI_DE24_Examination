@@ -3,6 +3,7 @@ from taipy.gui import navigate
 from connect_duckdb import query_strength_duckdb
 import datetime
 import pandas as pd
+import plotly.express as px
 
 people = ["Erik", "Alexander"]
 selected_athlete = "Erik"
@@ -10,6 +11,7 @@ start_date = datetime.date(2025,12,1)
 end_date = datetime.date.today()
 dates = [start_date, end_date]
 show_data = False
+pie_figure= None
 strength_data = pd.DataFrame()
 weekly_volume = pd.DataFrame()
 top_exercises = pd.DataFrame()
@@ -39,10 +41,18 @@ def on_filter_click(state):
         .sort_values("volume_kg", ascending=False)
         .head(5)
     )
+    fig = px.pie(
+        top_exercises,
+        values="volume_kg",
+        names= "exercise_name",
+        hole=0.5,
+        title="Share of total volume per exercise"
+    )
     
-    state.top_exercises = top_exercises
     state.strength_data = df
+    state.top_exercises = top_exercises
     state.weekly_volume = weekly
+    state.pie_figure = fig
     state.show_data = True
     
 def format_timedelta_to_h_m(td) -> str:
@@ -101,13 +111,8 @@ with tgb.Page() as strength_page:
                             color = "red"
                         )
                     with tgb.part(class_name= "card card-margin"):
-                        tgb.chart(
-                            "{top_exercises}",
-                            labels="exercise_name",
-                            values= "volume_kg",
-                            type="pie",
-                            title= "Share of total volume per exercise",
-                            height="400px")
+                        tgb.text("## Volume by exercise", mode="md")
+                        tgb.chart(figure= "{pie_figure}", height="400px")
                 tgb.text("## KPI's", mode="md") 
                 with tgb.layout(columns="1 1 1"): 
                     with tgb.part(class_name="card"):
