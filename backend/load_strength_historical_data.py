@@ -1,8 +1,8 @@
-import io # io ???
+import io
 import requests
 import pandas as pd
 import dlt
-from constants import DUCKDB_PATH, CSV_URL_ALEX, CSV_URL_ERIK
+from backend.constants import DUCKDB_PATH, CSV_URL_ALEX, CSV_URL_ERIK
 
 fix_columns = ["weight_kg", "athlete_weight_kg", "extra_weight_kg", "total_volume_session"] # "athlete_weight_kg"
 
@@ -37,8 +37,10 @@ pipeline = dlt.pipeline(
     dataset_name="staging",
 )
 
-if __name__ == '__main__':
-    load_info = pipeline.run(fetch_alex_strength_data)
-    load_info = pipeline.run(fetch_erik_strength_data)
+@dlt.source
+def strength_source():
+    return [fetch_alex_strength_data(), fetch_erik_strength_data()]
 
+if __name__ == '__main__':
+    load_info = pipeline.run(strength_source())
     print(load_info) 
