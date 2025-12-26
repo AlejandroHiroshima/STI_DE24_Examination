@@ -107,7 +107,7 @@ def fetch_strava_activities_raw(after: datetime, before: datetime):
     name="historical_strava_activities",
     write_disposition="merge",
     primary_key="id",
-    table_name="stg_strava_activities",
+    table_name="staging_cardio",
 )
 def fetch_strava_activities():
     """

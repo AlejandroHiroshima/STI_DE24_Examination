@@ -1,0 +1,20 @@
+FROM python:3.12-slim
+
+WORKDIR /pipeline
+
+RUN pip install --no-cache-dir \
+    dagster \
+    dagster-webserver \
+    dagster-dbt \
+    dagster-dlt \
+    dlt[duckdb] \
+    dbt-core \
+    dbt-duckdb \
+    duckdb \
+    requests \
+    pandas
+
+COPY backend/ /pipeline/backend/
+COPY dagster_strength.py /pipeline/
+
+CMD ["dagster", "dev", "-f", "dagster_strength.py", "-h", "0.0.0.0", "-p", "3000"]

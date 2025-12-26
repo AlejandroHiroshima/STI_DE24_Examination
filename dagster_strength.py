@@ -1,11 +1,9 @@
 from pathlib import Path
 import os
-
 import dlt
 import dagster as dg
 from dagster_dlt import DagsterDltResource, dlt_assets
 from dagster_dbt import DbtCliResource, DbtProject, dbt_assets
-
 from backend.load_strength_historical_data import strength_source
 from backend.load_strava_data import strava_source
 

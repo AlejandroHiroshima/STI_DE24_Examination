@@ -1,8 +1,8 @@
 import duckdb
-from pathlib import Path
 import pandas as pd
+import os
 
-db_path = Path(__file__).parents[1] / "strength.duckdb"
+db_path = os.getenv("DUCKDB_PATH")
 
 def query_strength_duckdb(athlete_name: str, start_date: str, end_date: str) -> pd.DataFrame :
     with duckdb.connect(str(db_path), read_only=True) as conn:
