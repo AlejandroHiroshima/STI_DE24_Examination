@@ -224,6 +224,3 @@ storage/
 *.out
 *.err
 *.complete
-
-# dlt temporära filer
-.dlt/
