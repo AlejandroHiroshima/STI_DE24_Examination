@@ -1,6 +1,6 @@
 import taipy.gui.builder as tgb
 from taipy.gui import navigate
-from connect_duckdb import query_strength_duckdb
+from strength_utils import on_filter_click
 import datetime
 import pandas as pd
 
@@ -10,43 +10,13 @@ start_date = datetime.date(2025,12,1)
 end_date = datetime.date.today()
 dates = [start_date, end_date]
 show_data = False
+pie_figure= None
+selected_exercise = None
+selected_session = None
 strength_data = pd.DataFrame()
-weekly_volume = pd.DataFrame()  # Ny state-variabel för grafen
-
-def on_filter_click(state):
-    athlete = state.selected_athlete
-    start_date = state.dates[0].strftime("%Y-%m-%d")
-    end_date = state.dates[1].strftime("%Y-%m-%d")
-    df= query_strength_duckdb(athlete, start_date, end_date)    
-    state.strength_data = df
-    state.show_data= True
+weekly_volume = pd.DataFrame()
+top_exercises = pd.DataFrame()
     
-    #-------------------------------------------------Beräkningar för grafen
-    
-    # --- Beräkna volym per rad beroende på atlet ---
-    if athlete == "Erik":
-        df["volume_kg"] = df["total_volume_session"] * 1000  # Konvertera ton till kg
-    else:  # Alexander
-        df["volume_kg"] = df["weight_kg"] * df["reps"]
-    
-    # --- Skapa veckokolumn ---
-    df["full_workout_date"] = pd.to_datetime(df["full_workout_date"])
-    df["year_week"] = df["full_workout_date"].dt.strftime("%Y-W%V")
-    
-    # --- Aggregera per vecka ---
-    weekly = (
-        df.groupby("year_week", as_index=False)["volume_kg"]
-          .sum()
-          .sort_values("year_week")
-    )
-    
-    state.strength_data = df
-    state.weekly_volume = weekly
-    state.show_data = True
-    
-    #---------------------------------------------------------------------
-
-#---Ändrar tidsformatet från pandas Timedelta till 'X h Y min'    
 def format_timedelta_to_h_m(td) -> str:
     if td is None or pd.isna(td):
         return "0 h 0 min"
@@ -57,12 +27,9 @@ def format_timedelta_to_h_m(td) -> str:
 
     return f"{hours} h {minutes} min"
 
-
-# -- Toggle back to dashboard button 
 def go_dashboard(state):
     navigate(state, to="dashboard")
     
-
 with tgb.Page() as strength_page:
     tgb.toggle(theme=True)
     with tgb.part(class_name="card text-center card-margin"):
@@ -87,69 +54,120 @@ with tgb.Page() as strength_page:
                         "Filter",
                         on_action= on_filter_click
                     )  
-            # --- graf för Lyft volym per vecka             
-                with tgb.part(class_name="card card-margin"):
-                    tgb.chart(
-                        "{weekly_volume}",
-                        x="year_week",
-                        y="volume_kg",
-                        type="linechart",
-                        title="Total lifted volume per week (kg)",
-                        height="400px",
-                        color = "red"
-                    )
                 
-                    
-                  
             with tgb.part(render="{show_data}"):
+                with tgb.layout(columns="2 1"): 
+                    with tgb.part(class_name="card card-margin"):
+                        tgb.chart(
+                            "{weekly_volume}",
+                            x="year_week",
+                            y="volume_kg",
+                            type="linechart",
+                            title="Total lifted volume per week (kg)",
+                            layout= {
+                                "xaxis": {"title": "Week number",
+                                        "tickangle": -45},
+                                "yaxis": {"title": "Volume (kg)"}
+                            },
+                            height="400px",
+                            color = "red"
+                        )
+                    with tgb.part(class_name= "card card-margin"):
+                        tgb.text("## Volume by exercise", mode="md")
+                        tgb.chart(figure= "{pie_figure}", height="400px")
+                tgb.text("## KPI's", mode="md") 
+                with tgb.layout(columns="1 1 1"): 
+                    with tgb.part(class_name="card"):
+                        tgb.text("**Total gym sessions**", mode="md") 
+                        tgb.text("{len(strength_data['full_workout_date'].unique())}", class_name="h2")
+            
+                    with tgb.part(class_name="card"):
+                        tgb.text("**Total volume (kg)**", mode="md")
+                        with tgb.part(render="{selected_athlete == 'Erik'}"):
+                            tgb.text("{round(strength_data['total_volume_session'].sum()*1000, 1)}", class_name="h2")
+                        with tgb.part(render="{selected_athlete == 'Alexander'}"):
+                            tgb.text("{round((strength_data['weight_kg'] * strength_data['reps']).sum(), 1)}", class_name="h2")
+                            
+                    with tgb.part(class_name="card"):
+                        tgb.text("**Total amount of sets**", mode="md")
+                        tgb.text("{len(strength_data)}", class_name="h2")
+            
+                    with tgb.part(class_name="card"):
+                        tgb.text("**Total time**", mode="md")
+                        tgb.text(
+                            "{format_timedelta_to_h_m(strength_data['time_session'].sum())}",
+                            class_name="h2")
+            
+                    with tgb.part(class_name="card"):
+                        tgb.text("**Total number repetitions**", mode="md")
+                        tgb.text("{strength_data['reps'].sum()}", class_name="h2")
+                
+                    with tgb.part(class_name="card"):
+                        tgb.text("**Heaviest set**", mode="md")
+                        tgb.text(
+                            "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'weight_kg']} kg × "
+                            "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'reps']} reps "
+                            "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'exercise_name']}",
+                            class_name="h2")
+                        tgb.text(
+                            " on {strength_data.loc[strength_data['weight_kg'].idxmax(), 'day_name']}"
+                            " {strength_data.loc[strength_data['weight_kg'].idxmax(), 'day']}"
+                            "/{strength_data.loc[strength_data['weight_kg'].idxmax(), 'month']}"
+                            , class_name="h5"
+                        )
+                tgb.text("## Exercise focus", mode="md")
                 with tgb.part(class_name="card card-margin"):
-                    tgb.text("## KPI's", mode="md")
-
-                    with tgb.layout(columns="1 1 1"):
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Total gym sessions**", mode="md")
-                            tgb.text("{len(strength_data['full_workout_date'].unique())}", class_name="h2")
-                
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Total volume (kg)**", mode="md")
-                            with tgb.part(render="{selected_athlete == 'Erik'}"):
-                                tgb.text("{round(strength_data['total_volume_session'].sum()*1000, 1)}", class_name="h2")
-                            with tgb.part(render="{selected_athlete == 'Alexander'}"):
-                                tgb.text("{round((strength_data['weight_kg'] * strength_data['reps']).sum(), 1)}", class_name="h2")
-                                
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Total amount of sets**", mode="md")
-                            tgb.text("{len(strength_data)}", class_name="h2")
-
-                
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Total time**", mode="md")
-                            tgb.text(
-                                "{format_timedelta_to_h_m(strength_data['time_session'].sum())}",
-                                class_name="h2"
-                            )
-                
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Total number repetitions**", mode="md")
-                            tgb.text("{strength_data['reps'].sum()}", class_name="h2")
+                    with tgb.layout(columns= "2 1 1 1"):
+                        with tgb.part():
+                            tgb.selector(
+                                value= "{selected_exercise}",
+                                lov="{sorted(strength_data['exercise_name'].dropna().unique().tolist())}",
+                                dropdown=True, 
+                                label="Choose exercise")
                     
-                        with tgb.part(class_name="card"):
-                            tgb.text("**Heaviest set**", mode="md")
-                            tgb.text(
-                                "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'weight_kg']} kg × "
-                                "{strength_data.loc[strength_data['weight_kg'].idxmax(), 'reps']} reps",
-                                class_name="h2")
-                            tgb.text(
-                                " on {strength_data.loc[strength_data['weight_kg'].idxmax(), 'day_name']}"
-                                " {strength_data.loc[strength_data['weight_kg'].idxmax(), 'month']}"
-                                "/{strength_data.loc[strength_data['weight_kg'].idxmax(), 'day']}"
-                                , class_name="h5"
-                            )
-                        
-
+                        with tgb.part(render= "{selected_exercise is not None}"):    
+                            tgb.text("**Total volume (kg)**", mode= "md")
+                            tgb.text("{round(strength_data[strength_data['exercise_name'] == selected_exercise]['volume_kg'].sum(), 1)}", 
+                                    class_name="h3")
+                        with tgb.part(render= "{selected_exercise is not None}"):    
+                            tgb.text("**Total sets**", mode="md")
+                            tgb.text("{len(strength_data[strength_data['exercise_name'] == selected_exercise])}", class_name="h3")
+                        with tgb.part(render= "{selected_exercise is not None}"):    
+                            tgb.text("**Max weight**", mode="md")
+                            tgb.text("{strength_data[strength_data['exercise_name'] == selected_exercise]['weight_kg'].max()} kg",
+                                     class_name="h3")
+                    with tgb.part():
+                        tgb.chart(
+                            "{strength_data[strength_data['exercise_name'] == selected_exercise].groupby('full_workout_date', as_index= False)['volume_kg'].sum()}",
+                            x= "full_workout_date",
+                            y="volume_kg",
+                            type="line",
+                            title="Volume over time for selected exercise: {selected_exercise}",
+                            height="300px"
+                        )
+                tgb.text("## Session explorer", mode="md")
+                with tgb.part(class_name="card card-margin"):
+                    tgb.selector("{selected_session}",
+                                lov="{sorted(strength_data['exercise_session_name'].dropna().unique().tolist())}",
+                                dropdown=True,
+                                label="Choose session")
+                    with tgb.part(render="{selected_session is not None}"):
+                        with tgb.layout(columns="1 1 1"):
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Session volume (kg)**", mode="md")
+                                tgb.text("{round(strength_data[strength_data['exercise_session_name'] == selected_session]['volume_kg'].sum(), 1)}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Exercises**", mode="md")    
+                                tgb.text("{len(strength_data[strength_data['exercise_session_name'] == selected_session]['exercise_name'].unique())}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Total sets**", mode="md")    
+                                tgb.text("{len(strength_data[strength_data['exercise_session_name'] == selected_session])}", class_name="h3")
+                        tgb.table(
+                            "{strength_data[strength_data['exercise_session_name'] == selected_session]"
+                            "[['exercise_name', 'set_number', 'reps', 'weight_kg']]"
+                            ".sort_values(['exercise_name', 'set_number'])}")
 
                 tgb.button(
                     "Back to main page",
                     on_action=go_dashboard,
                 )
-

@@ -1,10 +1,8 @@
 import duckdb
-from pathlib import Path
 import pandas as pd
+import os
 
-
-# --- Ingest strength data to dashboard 
-db_path = Path(__file__).parents[1] / "strength.duckdb"
+db_path = os.getenv("DUCKDB_PATH")
 
 def query_strength_duckdb(athlete_name: str, start_date: str, end_date: str) -> pd.DataFrame :
     with duckdb.connect(str(db_path), read_only=True) as conn:
@@ -19,22 +17,20 @@ def query_strength_duckdb(athlete_name: str, start_date: str, end_date: str) -> 
                 full_workout_date BETWEEN ? AND ?
             AND 
                 exercise_name IS NOT NULL;    
-""")    
+            """)    
         result = conn.execute(query, [athlete_name.lower(), start_date, end_date] )    
         return result.df()
     
-#--- Ingest Cardiodata to dashboard
-
 def query_cardio_duckdb(activity_type: str, start_date: str, end_date: str) -> pd.DataFrame:
     with duckdb.connect(str(db_path), read_only=True) as conn:
-        if activity_type == "All": # All exercise
+        if activity_type == "All": 
             query = """
                 SELECT *
                 FROM main_mart.mart_cardio
                 WHERE full_workout_date BETWEEN ? AND ?;
             """
             params = [start_date, end_date]
-        else: # Selected types 
+        else:
             query = """  
                 SELECT *
                 FROM main_mart.mart_cardio
