@@ -7,10 +7,6 @@ from dagster_dbt import DbtCliResource, DbtProject, dbt_assets
 from backend.load_strength_historical_data import strength_source
 from backend.load_strava_data import strava_source
 
-# ==================== #
-#  Paths & env vars    #
-# ==================== #
-
 DUCKDB_PATH = os.getenv("DUCKDB_PATH")
 DBT_PROFILES_DIR = os.getenv("DBT_PROFILES_DIR")
 
@@ -19,11 +15,6 @@ if not DUCKDB_PATH:
 
 if not DBT_PROFILES_DIR:
     raise RuntimeError("DBT_PROFILES_DIR is not set in environment variables")
-
-# ==================== #
-#       dlt Assets     #
-# ==================== #
-
 dlt_resource = DagsterDltResource()
 
 @dlt_assets(
@@ -35,7 +26,6 @@ dlt_resource = DagsterDltResource()
     ),
 )
 def dlt_strength_load(context: dg.AssetExecutionContext, dlt: DagsterDltResource):
-    """Kör dlt-pipelinen som laddar styrkedata (Alex + Erik) till DuckDB."""
     yield from dlt.run(context=context)
 
 
@@ -45,10 +35,6 @@ def dlt_strength_load(context: dg.AssetExecutionContext, dlt: DagsterDltResource
     compute_kind="dlt",
 )
 def dlt_strava_load(context: dg.AssetExecutionContext):
-    """
-    Laddar Strava-aktiviteter via dlt till DuckDB.
-    Använder en egen @asset istället för @dlt_assets för att undvika metadata-bugg.
-    """
     duckdb_path = os.getenv("DUCKDB_PATH")
     if not duckdb_path:
         raise RuntimeError("DUCKDB_PATH is not set in environment variables")
@@ -61,7 +47,6 @@ def dlt_strava_load(context: dg.AssetExecutionContext):
         dataset_name="staging",
     )
 
-    # Konfigurera DuckDB-sökväg via dlt's credentials
     os.environ["DESTINATION__DUCKDB__CREDENTIALS"] = duckdb_path
 
     source = strava_source()
@@ -71,7 +56,6 @@ def dlt_strava_load(context: dg.AssetExecutionContext):
 
     context.log.info(f"Load info: {load_info}")
 
-    # Logga row counts om de finns
     if pipeline.last_trace and pipeline.last_trace.last_normalize_info:
         row_counts = pipeline.last_trace.last_normalize_info.row_counts
         context.log.info(f"Row counts: {row_counts}")
@@ -86,10 +70,6 @@ def dlt_strava_load(context: dg.AssetExecutionContext):
     else:
         context.log.warning("No normalize info available (0 rows loaded?)")
         return dg.Output(value=None, metadata={"rows_loaded": 0})
-
-# ==================== #
-#      dbt Assets      #
-# ==================== #
 
 dbt_project_directory = Path(__file__).parent / "backend" / "dbt_code"
 
@@ -108,10 +88,6 @@ def dbt_models(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     """
     yield from dbt.cli(["build"], context=context).stream()
 
-# ==================== #
-#        Jobs          #
-# ==================== #
-
 job_dlt_strength = dg.define_asset_job(
     "job_dlt_strength",
     selection=dg.AssetSelection.assets(dlt_strength_load)
@@ -127,10 +103,6 @@ job_dbt = dg.define_asset_job(
     selection=dg.AssetSelection.assets(dbt_models)
 )
 
-# ==================== #
-#      Schedules       #
-# ==================== #
-
 schedule_dlt_strength = dg.ScheduleDefinition(
     name="job_dlt_strength_schedule",
     job=job_dlt_strength,
@@ -144,9 +116,6 @@ schedule_dlt_strava = dg.ScheduleDefinition(
     cron_schedule="05 08 * * *",
     execution_timezone="Europe/Stockholm",
 )
-# ==================== #
-#       Sensors        #
-# ==================== #
 
 @dg.multi_asset_sensor(
     monitored_assets=[
@@ -166,10 +135,6 @@ def dlt_strength_sensor(context: dg.MultiAssetSensorEvaluationContext):
     if all(records.get(key) for key in context.asset_keys):
         context.advance_all_cursors()
         yield dg.RunRequest()
-
-# ==================== #
-#     Definitions      #
-# ==================== #
 
 defs = dg.Definitions(
     assets=[dlt_strength_load, dlt_strava_load, dbt_models],
