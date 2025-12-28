@@ -4,9 +4,6 @@ import taipy.gui.builder as tgb
 from taipy.gui import navigate
 from connect_duckdb import query_cardio_duckdb
 
-
-# ---------- Global state-variables
-
 activity_types = ["All", "Run", "Ride", "Spinning"]
 selected_activity = "All"
 
@@ -17,9 +14,6 @@ dates = [start_date, end_date]
 show_data = False
 cardio_data = pd.DataFrame()
 
-
-# ---------- Callbacks 
-
 def on_filter_click(state):
     activity_type = state.selected_activity
     start_date_str = state.dates[0].strftime("%Y-%m-%d")
@@ -29,12 +23,8 @@ def on_filter_click(state):
     state.cardio_data = df
     state.show_data = True
 
-# -- Toggle back to dashboard button 
 def go_dashboard(state):
     navigate(state, to="dashboard")
-    
-    
-#--- Convert minutes to hours and minutes
 
 def format_minutes_to_h_m(total_minutes: float) -> str:
     if total_minutes is None or pd.isna(total_minutes):
@@ -43,9 +33,6 @@ def format_minutes_to_h_m(total_minutes: float) -> str:
     hours = total_minutes // 60
     minutes = total_minutes % 60
     return f"{hours} h {minutes}"
-
-
-# ---------- Page
 
 with tgb.Page() as cardio_page:
     tgb.toggle(theme=True)

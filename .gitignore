@@ -212,4 +212,15 @@ secrets.toml
 .dlt/
 **/.dlt/
 
+# DuckDB databaser
 *.duckdb
+*.duckdb.wal
+
+# Dagster temporära filer och historik
+.tmp_dagster_home_*
+dagster_home/
+storage/
+*.db
+*.out
+*.err
+*.complete
