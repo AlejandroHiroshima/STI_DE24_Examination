@@ -10,7 +10,7 @@ with tgb.Page() as start_page:
     tgb.toggle(theme=True)
     with tgb.part(class_name="card text-center card-margin"):
         tgb.text("# Training dashboard", mode="md")
-        tgb.image("logo.jpg")
+        tgb.image("logo.png")
         
         with tgb.part():
             tgb.text("## Choose activity:", mode="md")
@@ -21,7 +21,7 @@ with tgb.Page() as start_page:
                         with tgb.part(class_name="card card-margin"):
                                 with tgb.part():
                                     tgb.text('#### **Strength**', mode="md")
-                                    tgb.image("erik_profile.jpg",
+                                    tgb.image("strength.png",
                                         on_action=lambda state: navigate(state, to="strength")
                                     )
 
@@ -30,7 +30,7 @@ with tgb.Page() as start_page:
                             with tgb.part(class_name="card card-margin"):
                                     with tgb.part():
                                         tgb.text('#### **Cardio**', mode="md")
-                                        tgb.image("erik_profile.jpg",
+                                        tgb.image("cardio.png",
                                             on_action=lambda state: navigate(state, to="cardio")
                                         )            
                         
@@ -41,4 +41,4 @@ if __name__ == "__main__":
         "cardio": cardio_page,
     }
     
-    Gui(pages=pages).run(dark_mode=True, use_reloader=True, port=8081)
+    Gui(pages=pages).run(dark_mode=True, use_reloader=False,host="0.0.0.0", port=8081)
