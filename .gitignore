@@ -224,3 +224,5 @@ storage/
 *.out
 *.err
 *.complete
+
+ini

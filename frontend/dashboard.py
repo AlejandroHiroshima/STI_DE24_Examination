@@ -4,8 +4,6 @@ from taipy.gui import navigate
 from cardio import cardio_page
 from strength import strength_page
 
-
-
 with tgb.Page() as start_page:
     tgb.toggle(theme=True)
     with tgb.part(class_name="card text-center card-margin"):
