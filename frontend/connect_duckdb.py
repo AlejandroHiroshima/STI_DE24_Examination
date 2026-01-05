@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-print(f"DUCKDB_PATH from env: {os.getenv('DUCKDB_PATH')}")
 db_path = os.getenv("DUCKDB_PATH")
 
 def query_strength_duckdb(athlete_name: str, start_date: str, end_date: str) -> pd.DataFrame :

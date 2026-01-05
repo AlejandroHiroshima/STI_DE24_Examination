@@ -2,7 +2,8 @@ import datetime
 import pandas as pd
 import taipy.gui.builder as tgb
 from taipy.gui import navigate
-from cardio_utils import on_filter_click
+from cardio_utils import on_filter_click, agg_data, on_statistic_change
+
 
 activity_types = ["All", "Run", "Ride", "Spinning"]
 selected_activity = "All"
@@ -10,9 +11,12 @@ start_date = datetime.date(2025, 11, 10)
 end_date = datetime.date.today()
 dates = [start_date, end_date]
 show_data = False
-pie_figure= None
+pie_figure = None
+selected_statistics = None
 cardio_data = pd.DataFrame()
 weekly_volume = pd.DataFrame()
+top_exercises = pd.DataFrame()
+cardio_data_agg = pd.DataFrame()
 
 
 def format_minutes_to_h_m(total_minutes: float) -> str:
@@ -101,8 +105,32 @@ with tgb.Page() as cardio_page:
                         with tgb.part(class_name="card"):
                             tgb.text("**Max heart rate (bpm)**", mode="md")
                             tgb.text("{round(cardio_data['max_heartrate_bpm'].max(), 0)}", class_name="h2")
+                            
+            with tgb.part(render="{show_data}"):
+                with tgb.part(class_name="card card-margin"):
+                    tgb.text("## More valuable statistics", mode="md")
+          
+                    tgb.selector(
+                        value="{selected_statistics}",
+                        lov="{['average_heartrate_bpm', 'average_speed_kmh', 'max_heartrate_bpm', 'max_speed_kmh', 'total_distance_km']}",
+                        dropdown=True,
+                        label="Choose statistic",
+                        on_change=on_statistic_change
+)
+                                        
+                    tgb.chart(
+                        "{cardio_data_agg}",
+                        x="full_workout_date",
+                        y="value",
+                        type="line",
+                        title="Volume over time for {selected_statistics}",
+                        height="300px",
+                        render="{selected_statistics is not None and len(cardio_data_agg) > 0}"
+)
+                    
+    tgb.button(
+        "Back to main page",
+        on_action=go_dashboard
+    )
 
-                tgb.button(
-                    "Back to main page",
-                    on_action=go_dashboard,
-                )
+              

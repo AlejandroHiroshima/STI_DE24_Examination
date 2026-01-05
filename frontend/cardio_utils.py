@@ -38,3 +38,28 @@ def on_filter_click(state):
     state.weekly_volume = weekly
     state.pie_figure = fig
     state.show_data = True
+    
+    
+def agg_data(df, stat):
+    df = df.dropna(subset=["full_workout_date"])
+    
+
+    if stat not in df.columns:
+        return pd.DataFrame(columns=["full_workout_date", "value"])
+
+    df_agg = (
+        df.groupby("full_workout_date", as_index=False)[stat]
+          .mean()
+          .rename(columns={stat: "value"})
+          .sort_values("full_workout_date")
+    )
+    return df_agg
+
+
+def on_statistic_change(state):
+    stat = state.selected_statistics
+    df = getattr(state, "cardio_data", pd.DataFrame())
+    if stat and not df.empty:
+        state.cardio_data_agg = agg_data(df, stat)
+    else:
+        state.cardio_data_agg = pd.DataFrame(columns=["full_workout_date", "value"])
