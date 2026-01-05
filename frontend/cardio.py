@@ -2,29 +2,28 @@ import datetime
 import pandas as pd
 import taipy.gui.builder as tgb
 from taipy.gui import navigate
-from connect_duckdb import query_cardio_duckdb
+from cardio_utils import on_filter_click, agg_data, on_statistic_change, on_session_change
+
 
 activity_types = ["All", "Run", "Ride", "Spinning"]
 selected_activity = "All"
-
 start_date = datetime.date(2025, 11, 10)
 end_date = datetime.date.today()
 dates = [start_date, end_date]
-
 show_data = False
+pie_figure = None
+selected_statistics = "average_heartrate_bpm"
+session_list = []
+selected_session = None
+session_avg_pulse = 0
+session_total_distance = 0
+session_max_heartrate = 0
+session_avg_speed = 0
 cardio_data = pd.DataFrame()
+weekly_volume = pd.DataFrame()
+top_exercises = pd.DataFrame()
+cardio_data_agg = pd.DataFrame()
 
-def on_filter_click(state):
-    activity_type = state.selected_activity
-    start_date_str = state.dates[0].strftime("%Y-%m-%d")
-    end_date_str = state.dates[1].strftime("%Y-%m-%d")
-
-    df = query_cardio_duckdb(activity_type, start_date_str, end_date_str)
-    state.cardio_data = df
-    state.show_data = True
-
-def go_dashboard(state):
-    navigate(state, to="dashboard")
 
 def format_minutes_to_h_m(total_minutes: float) -> str:
     if total_minutes is None or pd.isna(total_minutes):
@@ -34,6 +33,9 @@ def format_minutes_to_h_m(total_minutes: float) -> str:
     minutes = total_minutes % 60
     return f"{hours} h {minutes}"
 
+def go_dashboard(state):
+    navigate(state, to="dashboard")
+    
 with tgb.Page() as cardio_page:
     tgb.toggle(theme=True)
 
@@ -56,7 +58,29 @@ with tgb.Page() as cardio_page:
 
                 with tgb.part():
                     tgb.button("Filter", on_action=on_filter_click)
-
+                    
+            with tgb.part(render="{show_data}"):
+                with tgb.layout(columns="2 1"): 
+                    with tgb.part(class_name="card card-margin"):
+                        tgb.chart(
+                            "{weekly_volume}",
+                            x="year_week",
+                            y="total_distance_km",
+                            type="linechart",
+                            title="Total distance (km)",
+                            layout= {
+                                "xaxis": {"title": "Week number",
+                                        "tickangle": -45},
+                                "yaxis": {"title": "Distance (km)"}
+                            },
+                            height="400px",
+                            color = "red"
+                        )
+                    with tgb.part(class_name= "card card-margin"):
+                        tgb.text("## Volume by exercise", mode="md")
+                        tgb.chart(figure= "{pie_figure}", height="400px")
+            
+#---------KPI´s
             with tgb.part(render="{show_data}"):
                 with tgb.part(class_name="card card-margin"):
                     tgb.text("## KPI's", mode="md")
@@ -87,8 +111,67 @@ with tgb.Page() as cardio_page:
                         with tgb.part(class_name="card"):
                             tgb.text("**Max heart rate (bpm)**", mode="md")
                             tgb.text("{round(cardio_data['max_heartrate_bpm'].max(), 0)}", class_name="h2")
+                            
+ #----- More valuable statistics                           
+            with tgb.part(render="{show_data}"):
+                with tgb.part(class_name="card card-margin"):
+                    tgb.text("## More valuable statistics", mode="md")
+                    tgb.selector(
+                        value="{selected_statistics}",
+                        lov="{['average_heartrate_bpm', 'average_speed_kmh', 'max_heartrate_bpm', 'max_speed_kmh', 'total_distance_km']}",
+                        dropdown=True,
+                        label="Choose statistic",
+                        on_change=on_statistic_change
+)
+                                        
+                    tgb.chart(
+                        "{cardio_data_agg}",
+                        x="full_workout_date",
+                        y="value",
+                        type="line",
+                        title="{selected_statistics} over time",
+                        layout={"yaxis": {"title": "{selected_statistics}"}},
+                        height="300px",
+                        render="{selected_statistics is not None and len(cardio_data_agg) > 0}")
+                    
+#--------- Session explorer
+            
+            
+            with tgb.part(render="{show_data}"):
+                tgb.text("## Session explorer", mode="md")
+                with tgb.part(class_name="card card-margin"):
+                    # tgb.selector(
+                    #     value="{selected_session}",   
+                    #     lov="{sorted(cardio_data['full_workout_date'].dropna().unique().tolist())}",
+                    #     dropdown=True,
+                    #     label="Choose session")
+                    tgb.selector(
+                        value="{selected_session}",
+                        lov="{session_list}",
+                        dropdown=True,
+                        label="Choose session",
+                        on_change=on_session_change
+                    )
+                    with tgb.part(render="{selected_session is not None}"):
+                        with tgb.layout(columns="1 1 1 1"):
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Session average pulse (bpm)**", mode="md")
+                                tgb.text("{session_avg_pulse}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Total distance (km)**", mode="md")
+                                tgb.text("{session_total_distance}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Max heart rate (bpm)**", mode="md")
+                                tgb.text("{session_max_heartrate}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Average speed (km/h)**", mode="md")
+                                tgb.text("{session_avg_speed}", class_name="h3")
 
+            
+            with tgb.part(style="text-align: center; width: 100%; margin-top: 20px;"):
                 tgb.button(
                     "Back to main page",
-                    on_action=go_dashboard,
+                    on_action=go_dashboard
                 )
+
+                        

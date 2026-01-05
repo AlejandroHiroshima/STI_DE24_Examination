@@ -44,3 +44,6 @@ def on_filter_click(state):
     state.selected_exercise = unique_exercises[0] 
     state.selected_session = unique_sessions[0] 
     state.show_data = True
+    
+    
+

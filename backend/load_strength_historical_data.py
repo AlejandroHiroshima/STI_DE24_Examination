@@ -2,7 +2,7 @@ import io
 import requests
 import pandas as pd
 import dlt
-from backend.constants import DUCKDB_PATH, CSV_URL_ALEX, CSV_URL_ERIK
+from .constants import DUCKDB_PATH, CSV_URL_ALEX, CSV_URL_ERIK
 
 fix_columns = ["weight_kg", "athlete_weight_kg", "extra_weight_kg", "total_volume_session"] # "athlete_weight_kg"
 

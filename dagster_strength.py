@@ -7,6 +7,7 @@ from dagster_dbt import DbtCliResource, DbtProject, dbt_assets
 from backend.load_strength_historical_data import strength_source
 from backend.load_strava_data import strava_source
 
+
 DUCKDB_PATH = os.getenv("DUCKDB_PATH")
 DBT_PROFILES_DIR = os.getenv("DBT_PROFILES_DIR")
 

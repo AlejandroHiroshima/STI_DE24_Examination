@@ -1,6 +1,9 @@
 import duckdb
 import pandas as pd
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 db_path = os.getenv("DUCKDB_PATH")
 
