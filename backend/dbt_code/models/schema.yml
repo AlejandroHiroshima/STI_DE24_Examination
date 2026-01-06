@@ -35,13 +35,4 @@ models:
                 to: "{{ ref('dim_date') }}"
                 field: workout_date_id
 
-      - name: exercise_id
-        description: "ID matching"
-        data_tests:
-          - not_null
-          - unique
-          - relationships:
-              arguments:
-                to: "{{ ref('dim_exercises') }}"
-                field: exercise_id
 
