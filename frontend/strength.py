@@ -113,6 +113,7 @@ with tgb.Page() as strength_page:
                             " on {strength_data.loc[strength_data['weight_kg'].idxmax(), 'day_name']}"
                             " {strength_data.loc[strength_data['weight_kg'].idxmax(), 'day']}"
                             "/{strength_data.loc[strength_data['weight_kg'].idxmax(), 'month']}"
+                            "-{strength_data.loc[strength_data['weight_kg'].idxmax(), 'year']}"
                             , class_name="h5"
                         )
                 tgb.text("## Exercise focus", mode="md")
