@@ -144,6 +144,11 @@ with tgb.Page() as strength_page:
                             y="volume_kg",
                             type="line",
                             title="Volume over time for selected exercise: {selected_exercise}",
+                            layout= {
+                                "xaxis": {"title": "Full workout date",
+                                        "tickangle": -45},
+                                "yaxis": {"title": "Volume (kg)"}
+                            },
                             height="300px"
                         )
                 tgb.text("## Session explorer", mode="md")
