@@ -4,6 +4,9 @@ from taipy.gui import navigate
 from cardio import cardio_page
 from strength import strength_page
 
+pic_width= "200px"
+pic_height= "150px"
+
 with tgb.Page() as start_page:
     tgb.toggle(theme=True)
     with tgb.part(class_name="card text-center card-margin"):
@@ -20,6 +23,8 @@ with tgb.Page() as start_page:
                                 with tgb.part():
                                     tgb.text('#### **Strength**', mode="md")
                                     tgb.image("strength.png",
+                                        width=pic_width,
+                                        height=pic_height,
                                         on_action=lambda state: navigate(state, to="strength")
                                     )
 
@@ -29,6 +34,8 @@ with tgb.Page() as start_page:
                                     with tgb.part():
                                         tgb.text('#### **Cardio**', mode="md")
                                         tgb.image("cardio.png",
+                                            width=pic_width,
+                                            height=pic_height,
                                             on_action=lambda state: navigate(state, to="cardio")
                                         )            
                         
