@@ -199,6 +199,15 @@ weekly_volume = pd.DataFrame()
 top_exercises = pd.DataFrame()
 cardio_data_agg = pd.DataFrame()
 
+stat_labels = {
+    "average_heartrate_bpm": "Average Heart Rate (bpm)",
+    "average_speed_kmh": "Average Speed (km/h)",
+    "max_heartrate_bpm": "Max Heart Rate (bpm)",
+    "max_speed_kmh": "Max Speed (km/h)",
+    "total_distance_km": "Total Distance (km)"
+}
+lov_keys = list(stat_labels.keys())
+lov_labels = list(stat_labels.values())
 
 def format_minutes_to_h_m(total_minutes: float) -> str:
     if total_minutes is None or pd.isna(total_minutes):
@@ -290,11 +299,12 @@ with tgb.Page() as cardio_page:
                     
             # ---- More valuable statistics                    
             with tgb.part(render="{show_data}"):
+                tgb.text("## Statistics", mode="md")
                 with tgb.part(class_name="card card-margin"):
-                    tgb.text("## More valuable statistics", mode="md")
                     tgb.selector(
                         value="{selected_statistics}",
-                        lov="{['average_heartrate_bpm', 'average_speed_kmh', 'max_heartrate_bpm', 'max_speed_kmh', 'total_distance_km']}",
+                        lov=lov_keys,
+                        lov_labels=lov_labels,
                         dropdown=True,
                         label="Choose statistic",
                         on_change=on_statistic_change
@@ -305,8 +315,20 @@ with tgb.Page() as cardio_page:
                         x="full_workout_date",
                         y="value",
                         type="line",
-                        title="{selected_statistics} over time",
-                        layout={"yaxis": {"title": "{selected_statistics}"}},
+                        title="{stat_labels[selected_statistics] if selected_statistics in stat_labels else selected_statistics} over time",
+                        layout={
+                            "xaxis": {
+                                "title": "Date",
+                                "type": "date",
+                                "tickangle": -45,
+                                "tickformat": "%Y-%m-%d",
+                                "rangeslider": {"visible": True}
+                            },
+                            "yaxis": {
+                                "title": "{stat_labels[selected_statistics] if selected_statistics in stat_labels else selected_statistics}"
+                            },
+                            "margin": {"t": 40, "b": 80}
+                        },
                         height="300px",
                         render="{selected_statistics is not None and len(cardio_data_agg) > 0}"
                     )
