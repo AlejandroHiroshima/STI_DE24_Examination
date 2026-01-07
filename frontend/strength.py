@@ -1,8 +1,9 @@
 import taipy.gui.builder as tgb
 from taipy.gui import navigate
-from strength_utils import on_filter_click
+from strength_utils import on_filter_click, on_exercise_change
 import datetime
 import pandas as pd
+import plotly.graph_objects as go
 
 people = ["Erik", "Alexander"]
 selected_athlete = "Erik"
@@ -16,6 +17,8 @@ selected_session = None
 strength_data = pd.DataFrame()
 weekly_volume = pd.DataFrame()
 top_exercises = pd.DataFrame()
+weekly_figure = go.Figure()
+exercise_line_figure = go.Figure()
     
 def format_timedelta_to_h_m(td) -> str:
     if td is None or pd.isna(td):
@@ -31,7 +34,6 @@ def go_dashboard(state):
     navigate(state, to="dashboard")
     
 with tgb.Page() as strength_page:
-    # tgb.toggle(theme=True)
     with tgb.part(class_name="text-center"):
         tgb.text("# Strength", mode="md")
 
@@ -44,7 +46,7 @@ with tgb.Page() as strength_page:
                             value="{selected_athlete}",
                             lov=people,
                             dropdown=True,
-                            label = "Choose athlete"
+                            label="Choose athlete"
                         )
                     with tgb.part():
                         tgb.date_range("{dates}", with_time=False, format="yyyy-MM-dd")
@@ -59,18 +61,8 @@ with tgb.Page() as strength_page:
                 with tgb.layout(columns="2 1"): 
                     with tgb.part(class_name="card card-margin"):
                         tgb.chart(
-                            "{weekly_volume}",
-                            x="year_week",
-                            y="volume_kg",
-                            type="linechart",
-                            title="Total lifted volume per week (kg)",
-                            layout= {
-                                "xaxis": {"title": "Week number",
-                                        "tickangle": -45},
-                                "yaxis": {"title": "Volume (kg)"}
-                            },
+                            figure="{weekly_figure}",
                             height="400px",
-                            color = "red"
                         )
                     with tgb.part(class_name= "card card-margin"):
                         tgb.text("## Volume by exercise", mode="md")
@@ -124,7 +116,9 @@ with tgb.Page() as strength_page:
                                 value= "{selected_exercise}",
                                 lov="{sorted(strength_data['exercise_name'].dropna().unique().tolist())}",
                                 dropdown=True, 
-                                label="Choose exercise")
+                                label="Choose exercise",
+                                on_change=on_exercise_change
+                            )
                     
                         with tgb.part(render= "{selected_exercise is not None}"):    
                             tgb.text("**Total volume (kg)**", mode= "md")
@@ -139,16 +133,7 @@ with tgb.Page() as strength_page:
                                      class_name="h3")
                     with tgb.part():
                         tgb.chart(
-                            "{strength_data[strength_data['exercise_name'] == selected_exercise].groupby('full_workout_date', as_index= False)['volume_kg'].sum()}",
-                            x= "full_workout_date",
-                            y="volume_kg",
-                            type="line",
-                            title="Volume over time for selected exercise: {selected_exercise}",
-                            layout= {
-                                "xaxis": {"title": "Workout date",
-                                        "tickangle": -45},
-                                "yaxis": {"title": "Volume (kg)"}
-                            },
+                            figure="{exercise_line_figure}",
                             height="300px"
                         )
                 tgb.text("## Session explorer", mode="md")
