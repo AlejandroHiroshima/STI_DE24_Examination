@@ -74,11 +74,12 @@ with tgb.Page() as strength_page:
                         tgb.text("{len(strength_data['full_workout_date'].unique())}", class_name="h2")
             
                     with tgb.part(class_name="card"):
-                        tgb.text("**Total volume (kg)**", mode="md")
+                        tgb.text("**Total volume (Ton)**", mode="md")
                         # with tgb.part(render="{selected_athlete == 'Erik'}"):
                         #     tgb.text("{round(strength_data['total_volume_session'].sum()*1000, 1)}", class_name="h2")
                         # with tgb.part(render="{selected_athlete == 'Alexander'}"):
-                        tgb.text("{round((strength_data['weight_kg'] * strength_data['reps']).sum(), 1)}", class_name="h2")
+                        # tgb.text("{round((strength_data['weight_kg'] * strength_data['reps']).sum() / 1000, 3)}", class_name="h2")
+                        tgb.text("{format((strength_data['weight_kg'] * strength_data['reps']).sum() / 1000, '.1f').replace('.', ',')}", class_name="h2")
                             
                     with tgb.part(class_name="card"):
                         tgb.text("**Total amount of sets**", mode="md")
