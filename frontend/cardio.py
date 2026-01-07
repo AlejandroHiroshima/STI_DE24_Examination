@@ -76,12 +76,23 @@ with tgb.Page() as cardio_page:
                             type="linechart",
                             title="Total distance (km)",
                             layout= {
-                                "xaxis": {"title": "Week number",
-                                "tickangle": -45},
-                                "yaxis": {"title": "Distance (km)"}
+                                "xaxis": {
+                                    "title": "Week number",
+                                    "tickangle": -45,
+                                    "titlefont": {"size": 16, "family": "Arial, sans-serif", "color": "#A6FF00"},
+                                    "title_standoff": 25,
+                                    "tickfont": {"size": 12}
+                                },
+                                "yaxis": {
+                                    "title": "Distance (km)",
+                                    "titlefont": {"size": 16, "family": "Arial, sans-serif", "color": "#A6FF00"},
+                                    "title_standoff": 25,
+                                    "tickfont": {"size": 12}
+                                },
+                                "margin": {"t": 50, "b": 100}
                             },
                             height="400px",
-                            color="#A6FF00"  
+                            color="#A6FF00"
                         )
                     with tgb.part(class_name= "card card-margin"):
                         tgb.text("## Volume by exercise", mode="md")
@@ -142,17 +153,21 @@ with tgb.Page() as cardio_page:
                                 "title": "Date",
                                 "type": "date",
                                 "tickangle": -45,
-                                "tickformat": "%Y-%m-%d"
-                                
+                                "titlefont": {"size": 16, "family": "Arial, sans-serif", "color": "#A6FF00"},
+                                "title_standoff": 25,
+                                "tickfont": {"size": 12}
                             },
                             "yaxis": {
-                                "title": "Value"
+                                "title": "Value",
+                                "titlefont": {"size": 16, "family": "Arial, sans-serif", "color": "#A6FF00"},
+                                "title_standoff": 25,
+                                "tickfont": {"size": 12}
                             },
-                            "margin": {"t": 40, "b": 80}
+                            "margin": {"t": 50, "b": 100}
                         },
                         height="300px",
                         render="{selected_statistics is not None and len(cardio_data_agg) > 0}",
-                        color="#A6FF00" 
+                        color="#A6FF00"
                     )
                     
             with tgb.part(render="{show_data}"):

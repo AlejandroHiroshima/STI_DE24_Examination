@@ -1,6 +1,6 @@
 import taipy.gui.builder as tgb
 from taipy.gui import navigate
-from strength_utils import on_filter_click
+from strength_utils import on_filter_click, on_exercise_change
 import datetime
 import pandas as pd
 import plotly.graph_objects as go
@@ -116,7 +116,9 @@ with tgb.Page() as strength_page:
                                 value= "{selected_exercise}",
                                 lov="{sorted(strength_data['exercise_name'].dropna().unique().tolist())}",
                                 dropdown=True, 
-                                label="Choose exercise")
+                                label="Choose exercise",
+                                on_change=on_exercise_change
+                            )
                     
                         with tgb.part(render= "{selected_exercise is not None}"):    
                             tgb.text("**Total volume (kg)**", mode= "md")

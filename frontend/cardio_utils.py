@@ -2,7 +2,6 @@ from connect_duckdb import query_cardio_duckdb
 import pandas as pd
 import plotly.express as px
 
-# Samma färgskala som i strength
 colors = [
     "#A6FF00",  
     "#FF6F61", 
@@ -11,6 +10,7 @@ colors = [
     "#6A5ACD", 
     "#FF8C00",  
 ]
+lime_color = "#A6FF00"
 
 def minutes_to_h_m(total_minutes):
     try:
@@ -76,8 +76,8 @@ def on_filter_click(state):
         values="total_minutes",
         names="activity_type",
         hole=0.5,
-        title="Share of total time per activity (minutes)",
-        color_discrete_sequence=colors  # använd samma palett
+        title="Share of total time per activity",
+        color_discrete_sequence=colors
     )
 
     customdata = top_exercises[["total_minutes", "time_h_m"]].values
@@ -144,7 +144,6 @@ def on_statistic_change(state):
         state.cardio_data_agg = agg_data(df, stat)
     else:
         state.cardio_data_agg = pd.DataFrame(columns=["full_workout_date", "value"])
-
 
 def on_session_change(state):
     try:
