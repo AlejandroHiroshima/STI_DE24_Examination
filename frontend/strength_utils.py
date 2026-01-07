@@ -7,11 +7,8 @@ def on_filter_click(state):
     start_date = state.dates[0].strftime("%Y-%m-%d")
     end_date = state.dates[1].strftime("%Y-%m-%d")
     df= query_strength_duckdb(athlete, start_date, end_date)    
-    
-    if athlete == "Erik":
-        df["volume_kg"] = df["total_volume_session"] * 1000
-    else:
-        df["volume_kg"] = df["weight_kg"] * df["reps"]
+      
+    df["volume_kg"] = df["weight_kg"] * df["reps"]
     
     df["full_workout_date"] = pd.to_datetime(df["full_workout_date"])
     df["year_week"] = df["full_workout_date"].dt.strftime("%Y week%V")
