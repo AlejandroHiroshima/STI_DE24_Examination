@@ -18,6 +18,7 @@ session_avg_pulse = 0
 session_total_distance = 0
 session_max_heartrate = 0
 session_avg_speed = 0
+session_total_moving = 0
 cardio_data = pd.DataFrame()
 weekly_volume = pd.DataFrame()
 top_exercises = pd.DataFrame()
@@ -181,7 +182,7 @@ with tgb.Page() as cardio_page:
                         on_change=on_session_change
                     )
                     with tgb.part(render="{selected_session is not None}"):
-                        with tgb.layout(columns="1 1 1 1"):
+                        with tgb.layout(columns="1 1 1 1 1"):
                             with tgb.part(class_name="card"):
                                 tgb.text("**Session average pulse (bpm)**", mode="md")
                                 tgb.text("{session_avg_pulse}", class_name="h3")
@@ -194,6 +195,9 @@ with tgb.Page() as cardio_page:
                             with tgb.part(class_name="card"):
                                 tgb.text("**Average speed (km/h)**", mode="md")
                                 tgb.text("{session_avg_speed}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Total running time (00:00)**", mode="md")
+                                tgb.text("{session_total_moving}", class_name="h3")
 
             with tgb.part(style="text-align: center; width: 100%; margin-top: 20px;"):
                 tgb.button(
