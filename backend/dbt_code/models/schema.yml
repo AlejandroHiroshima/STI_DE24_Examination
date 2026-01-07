@@ -1,0 +1,38 @@
+models:
+  - name: mart_cardio
+    description: "Table for Cardio dashboard"
+    columns:
+      - name: workout_date_id
+        description: "ID matching"
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: "{{ ref('dim_date') }}"
+                field: workout_date_id
+
+  - name: fct_strength
+    description: "Facts table for strength data"
+    columns:
+      - name: athlete_id
+        description: "ID matching"
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: "{{ ref('dim_athletes') }}"
+                field: athlete_id
+
+      - name: workout_date_id
+        description: "ID matching"
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: "{{ ref('dim_date') }}"
+                field: workout_date_id
+
+
