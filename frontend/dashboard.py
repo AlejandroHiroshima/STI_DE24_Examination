@@ -4,12 +4,11 @@ from taipy.gui import navigate
 from cardio import cardio_page
 from strength import strength_page
 
-pic_width= "200px"
-pic_height= "150px"
+pic_width= "400px"
+pic_height= "350px"
 
 with tgb.Page() as start_page:
-    tgb.toggle(theme=True)
-    with tgb.part(class_name="card text-center card-margin"):
+    with tgb.part(class_name="text-center"):
         tgb.text("# Training dashboard", mode="md")
         tgb.image("logo.png")
         
@@ -17,27 +16,25 @@ with tgb.Page() as start_page:
             tgb.text("## Choose activity:", mode="md")
             with tgb.layout(columns="1 1"):
 
-                with tgb.part() as column_erik:
-                    with tgb.part(class_name="text-center card-margin"):
-                        with tgb.part(class_name="card card-margin"):
-                                with tgb.part():
-                                    tgb.text('#### **Strength**', mode="md")
-                                    tgb.image("strength.png",
-                                        width=pic_width,
-                                        height=pic_height,
-                                        on_action=lambda state: navigate(state, to="strength")
-                                    )
+                with tgb.part() as strength:
+                    with tgb.part(class_name="text-center"):
+                            with tgb.part():
+                                tgb.text('#### **Strength**', mode="md")
+                                tgb.image("strength.png",
+                                    width=pic_width,
+                                    height=pic_height,
+                                    on_action=lambda state: navigate(state, to="strength")
+                                )
 
-                with tgb.part() as column_alex:
-                        with tgb.part(class_name="text-center card-margin"):
-                            with tgb.part(class_name="card card-margin"):
-                                    with tgb.part():
-                                        tgb.text('#### **Cardio**', mode="md")
-                                        tgb.image("cardio.png",
-                                            width=pic_width,
-                                            height=pic_height,
-                                            on_action=lambda state: navigate(state, to="cardio")
-                                        )            
+                with tgb.part() as cardio:
+                    with tgb.part(class_name="text-center"):
+                            with tgb.part():
+                                tgb.text('#### **Cardio**', mode="md")
+                                tgb.image("cardio.png",
+                                    width=pic_width,
+                                    height=pic_height,
+                                    on_action=lambda state: navigate(state, to="cardio")
+                                )            
                         
 if __name__ == "__main__":
     pages = {
@@ -46,4 +43,9 @@ if __name__ == "__main__":
         "cardio": cardio_page,
     }
     
-    Gui(pages=pages).run(dark_mode=True, use_reloader=False,host="0.0.0.0", port=8081)
+    Gui(pages=pages, css_file="style.css").run(dark_mode=True, 
+                                               use_reloader=True,
+                                               host="0.0.0.0", 
+                                               port=8081, 
+                                               title= "Training Dashboard", 
+                                               watermark="Training Dashboard")

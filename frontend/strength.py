@@ -31,8 +31,8 @@ def go_dashboard(state):
     navigate(state, to="dashboard")
     
 with tgb.Page() as strength_page:
-    tgb.toggle(theme=True)
-    with tgb.part(class_name="card text-center card-margin"):
+    # tgb.toggle(theme=True)
+    with tgb.part(class_name="text-center"):
         tgb.text("# Strength", mode="md")
 
     with tgb.part():
@@ -145,7 +145,7 @@ with tgb.Page() as strength_page:
                             type="line",
                             title="Volume over time for selected exercise: {selected_exercise}",
                             layout= {
-                                "xaxis": {"title": "Full workout date",
+                                "xaxis": {"title": "Workout date",
                                         "tickangle": -45},
                                 "yaxis": {"title": "Volume (kg)"}
                             },
@@ -168,10 +168,7 @@ with tgb.Page() as strength_page:
                             with tgb.part(class_name="card"):
                                 tgb.text("**Total sets**", mode="md")    
                                 tgb.text("{len(strength_data[strength_data['exercise_session_name'] == selected_session])}", class_name="h3")
-                        tgb.table(
-                            "{strength_data[strength_data['exercise_session_name'] == selected_session]"
-                            "[['exercise_name', 'set_number', 'reps', 'weight_kg']]"
-                            ".sort_values(['exercise_name', 'set_number'])}")
+                        tgb.table("{strength_data[strength_data['exercise_session_name'] == selected_session][['exercise_name','set_number','reps','weight_kg']].sort_values(['exercise_name','set_number']).rename(columns=lambda c: c.replace('_',' ').title()).reset_index(drop=True)}")
 
                 tgb.button(
                     "Back to main page",

@@ -1,0 +1,198 @@
+/* style.css - komplett mörkgrå bakgrund + limegrön ram på bilder + övrigt tema */
+
+/* --- Bakgrund och text på ALLA nivåer --- */
+html, body, .taipy-app, .taipy-root, .taipy-page, .taipy-layout, .taipy-container, .taipy-content, .taipy-main,
+.taipy-navbar, .taipy-header, .taipy-footer, .taipy-sidebar {
+    background-color: #2f2f2f !important; /* mörkgrå */
+    color: #e6e6e6 !important;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Fix för part med class="text-center" — tvinga mörkgrå bakgrund */
+.taipy-part.text-center,
+.text-center,
+.taipy-part.text-center > .taipy-content,
+.taipy-part.text-center > .taipy-content > * {
+    background-color: #3a3a3a !important; /* samma som dina kort */
+    background-image: none !important;
+    color: #e6e6e6 !important;
+    padding: 1rem !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+    border: 1px solid rgba(166,214,8,0.07) !important;
+}
+/* --- Kort / paneler --- */
+.card {
+    background-color: #3a3a3a !important;
+    color: #e6e6e6 !important;
+    box-shadow: 0 8px 16px rgba(166,214,8,0.12) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(166,214,8,0.12) !important;
+    padding: 1rem !important;
+    box-sizing: border-box;
+}
+
+/* Marginal mellan kort */
+.card-margin {
+    margin-bottom: 30px !important;
+}
+
+/* --- Bilder: exakt lika stora, centrerade, enkel limegrön ram --- */
+.fixed-image {
+    border: 3px solid #A6D608 !important; /* tydlig limegrön ram */
+    border-radius: 10px !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 240px !important;   /* exakt bredd */
+    height: 240px !important;  /* exakt höjd */
+    object-fit: contain !important;
+    background: transparent !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+}
+
+/* --- Knappar (filter / back) --- */
+.filter-button, .back-button, .taipy-button, button {
+    background-color: #A6D608 !important; /* limegrön */
+    color: #111 !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-shadow: 0 6px 12px rgba(166,214,8,0.12) !important;
+    transition: background-color 0.3s ease !important;
+}
+.filter-button:hover, .back-button:hover, .taipy-button:hover, button:hover {
+    background-color: #8CBF00 !important;
+}
+
+/* --- Tabeller --- */
+.taipy-table, .taipy-table table, .taipy-table thead, .taipy-table tbody {
+    background-color: #4a4a4a !important;
+    color: #e6e6e6 !important;
+    border-radius: 8px !important;
+}
+.taipy-table table {
+    border-collapse: separate !important;
+    border-spacing: 0 6px !important;
+}
+.taipy-table th, .taipy-table td {
+    background: transparent !important;
+    color: #e6e6e6 !important;
+    padding: 0.5rem 0.6rem !important;
+    border: none !important;
+}
+.taipy-table thead th {
+    color: #A6D608 !important;
+    font-weight: 700 !important;
+    opacity: 0.95 !important;
+}
+.taipy-table tbody tr {
+    background-color: rgba(255,255,255,0.02) !important;
+}
+
+/* --- Plotly grafer --- */
+.js-plotly-plot .plotly {
+    background-color: #4a4a4a !important;
+    border-radius: 8px !important;
+    padding: 6px !important;
+}
+.js-plotly-plot .plotly .xtick text,
+.js-plotly-plot .plotly .ytick text,
+.js-plotly-plot .plotly .xaxis,
+.js-plotly-plot .plotly .yaxis {
+    fill: #e6e6e6 !important;
+    color: #e6e6e6 !important;
+}
+.js-plotly-plot .plotly .xgrid,
+.js-plotly-plot .plotly .ygrid {
+    stroke: #666 !important;
+    stroke-opacity: 1 !important;
+}
+.js-plotly-plot .plotly .legend,
+.js-plotly-plot .plotly .legendtitle {
+    color: #e6e6e6 !important;
+    background: rgba(0,0,0,0.12) !important;
+}
+
+/* --- Selectors, toggles och menyer --- */
+.taipy-selector:focus-within,
+.taipy-selector .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #A6D608 !important;
+    box-shadow: 0 0 0 2px rgba(166,214,8,0.12) !important;
+}
+.taipy-selector .MuiSvgIcon-root {
+    color: #A6D608 !important;
+}
+.taipy-selector .MuiChip-root {
+    background-color: #A6D608 !important;
+    color: #111 !important;
+}
+.MuiMenuItem-root:hover {
+    background-color: rgba(166,214,8,0.08) !important;
+}
+.MuiMenuItem-root.Mui-selected {
+    background-color: rgba(166,214,8,0.16) !important;
+}
+
+/* --- Navbar --- */
+.taipy-navbar .MuiTabs-root .MuiTabs-flexContainer button.Mui-selected {
+    background-color: #A6D608 !important;
+    color: #111 !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 8px 18px rgba(166,214,8,0.12) !important;
+}
+.taipy-navbar .MuiTabs-root .MuiTabs-flexContainer button:hover {
+    background-color: rgba(166,214,8,0.12) !important;
+}
+.taipy-navbar .MuiTabs-indicator {
+    background: linear-gradient(to top, #A6D608 70%, rgba(166,214,8,0.0) 100%) !important;
+    height: 8px !important;
+    border-radius: 8px !important;
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #2f2f2f;
+}
+::-webkit-scrollbar-thumb {
+    background: #A6D608;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #8CBF00;
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #A6D608 #2f2f2f;
+}
+
+/* --- Små justeringar --- */
+b, strong {
+    color: #A6D608 !important;
+}
+.kpi-value {
+    font-size: 1.9rem !important;
+    color: #A6D608 !important;
+}
+.hover_color:hover {
+    box-shadow: 0 0 12px 4px rgba(166,214,8,0.12) !important;
+}
+
+/* --- Responsiv bildstorlek --- */
+@media (max-width: 600px) {
+    .fixed-image {
+        width: 140px !important;
+        height: 140px !important;
+    }
+    .card {
+        padding: 0.8rem !important;
+    }
+}
