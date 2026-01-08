@@ -2,7 +2,7 @@ import datetime
 import pandas as pd
 import taipy.gui.builder as tgb
 from taipy.gui import navigate
-from cardio_utils import on_filter_click, on_statistic_change, on_session_change
+from cardio_utils import on_filter_click, on_statistic_change, on_session_change, minutes_to_h_m_s
 
 activity_types = ["All", "Run", "Ride", "Spinning"]
 selected_activity = "All"
@@ -18,11 +18,13 @@ session_avg_pulse = 0
 session_total_distance = 0
 session_max_heartrate = 0
 session_avg_speed = 0
+session_total_moving = 0
 cardio_data = pd.DataFrame()
 weekly_volume = pd.DataFrame()
 top_exercises = pd.DataFrame()
 cardio_data_agg = pd.DataFrame()
 chart_y_title = ""
+minutes_to_h_m = minutes_to_h_m_s
 
 stat_labels = {
     "average_heartrate_bpm": "Average Heart Rate (bpm)",
@@ -34,16 +36,10 @@ stat_labels = {
 lov_keys = list(stat_labels.keys())
 lov_labels = list(stat_labels.values())
 
-def format_minutes_to_h_m(total_minutes: float) -> str:
-    if total_minutes is None or pd.isna(total_minutes):
-        return "0 h 0 min"
-    total_minutes = int(round(total_minutes))
-    hours = total_minutes // 60
-    minutes = total_minutes % 60
-    return f"{hours} h {minutes}"
 
 def go_dashboard(state):
     navigate(state, to="dashboard")
+    
     
 with tgb.Page() as cardio_page:
     with tgb.part(class_name="card text-center card-margin"):
@@ -118,7 +114,7 @@ with tgb.Page() as cardio_page:
                         with tgb.part(class_name="card"):
                             tgb.text("**Total time**", mode="md")
                             tgb.text(
-                                "{format_minutes_to_h_m(cardio_data['average_moving_time_min'].sum())}",
+                                "{minutes_to_h_m(cardio_data['average_moving_time_min'].sum())}",
                                 class_name="h2",
                             )
 
@@ -181,7 +177,7 @@ with tgb.Page() as cardio_page:
                         on_change=on_session_change
                     )
                     with tgb.part(render="{selected_session is not None}"):
-                        with tgb.layout(columns="1 1 1 1"):
+                        with tgb.layout(columns="1 1 1 1 1"):
                             with tgb.part(class_name="card"):
                                 tgb.text("**Session average pulse (bpm)**", mode="md")
                                 tgb.text("{session_avg_pulse}", class_name="h3")
@@ -194,6 +190,9 @@ with tgb.Page() as cardio_page:
                             with tgb.part(class_name="card"):
                                 tgb.text("**Average speed (km/h)**", mode="md")
                                 tgb.text("{session_avg_speed}", class_name="h3")
+                            with tgb.part(class_name="card"):
+                                tgb.text("**Total running time (00:00:00)**", mode="md")
+                                tgb.text("{minutes_to_h_m(session_total_moving)}", class_name="h3")
 
             with tgb.part(style="text-align: center; width: 100%; margin-top: 20px;"):
                 tgb.button(
