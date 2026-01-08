@@ -36,14 +36,6 @@ stat_labels = {
 lov_keys = list(stat_labels.keys())
 lov_labels = list(stat_labels.values())
 
-# def format_minutes_to_h_m(total_minutes: float) -> str:
-#     if total_minutes is None or pd.isna(total_minutes):
-#         return "0 h 0 min"
-#     total_minutes = int(round(total_minutes))
-#     hours = total_minutes // 60
-#     minutes = total_minutes % 60
-#     return f"{hours} h {minutes}"
-
 
 def go_dashboard(state):
     navigate(state, to="dashboard")
