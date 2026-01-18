@@ -160,6 +160,7 @@ def on_session_change(state):
     state.session_total_distance = 0
     state.session_max_heartrate = 0
     state.session_avg_speed = 0
+    state.session_total_moving = 0
 
     if not sel or df.empty:
         return
@@ -178,3 +179,16 @@ def on_session_change(state):
         state.session_max_heartrate = int(filtered["max_heartrate_bpm"].max())
     if "average_speed_kmh" in filtered:
         state.session_avg_speed = round(filtered["average_speed_kmh"].mean(), 2)
+    if "total_moving_time_min" in filtered:
+        state.session_total_moving = round(filtered["total_moving_time_min"].sum(), 2)
+        
+def minutes_to_h_m_s(total_minutes):
+    try:
+        total_seconds = int(round(float(total_minutes) * 60))
+    except Exception:
+        return "00:00:00"
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+

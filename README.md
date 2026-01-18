@@ -22,7 +22,7 @@ Detta projekt är en komplett datapipeline och dashboard för insamling, lagring
 - **Dataingest:** Python-skript med dlt för Strava och Google Sheets
 - **Orkestrering:** Dagster (för pipeline-körningar)
 - **Dashboard:** Taipy GUI
-- **Molndrift:** Azure Container Instances och Azure Web App
+- **Molndrift:** Azure Container Instances, Azure Web App, Docker 
 
 ![alt text](files/dataflow.png)
 ---
@@ -55,7 +55,12 @@ Detta projekt är en komplett datapipeline och dashboard för insamling, lagring
 Dashboarden är även tillgänglig online via följande URL:
 https://training-dashboard-de24-etf8b0g7hsavegb3.swedencentral-01.azurewebsites.net/dashboard
 
-![alt text](demo.png)
+
+### Screenshot från Cardiosidan
+![alt text](files/cardio.png)
+
+### Screenshot från Strengthsidan
+![alt text](files/strength.png)
 
 ### Framtida utveckling
 - Utöka datamodellen med fler dimensioner (t.ex. utrustning, geografiska platser)
